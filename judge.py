@@ -18,8 +18,8 @@ def instructions(contest):
     bucket = stc.get_bucket("discord-bot-oj-file-storage")
     try:
         blob = bucket.blob("ContestInstructions/" + contest + ".txt")
-        blob.download_to_filename("/home/runner/instructions.txt")
-        put_markdown("```\n" + open("/home/runner/instructions.txt").read() + "\n```")
+        blob.download_to_filename("instructions.txt")
+        put_markdown("```\n" + open("instructions.txt").read() + "\n```")
     except Exception as e:
         put_markdown("This contest does not yet have an instructions file.")
 
@@ -169,9 +169,9 @@ def problemInterface(settings, problem, user):
             return
         
         try:
-            file.download_to_filename("/home/runner/problem.txt")
+            file.download_to_filename("problem.txt")
             put_markdown("### Problem statement for problem `" + problem + "`")
-            put_markdown(open("/home/runner/problem.txt").read())
+            put_markdown(open("problem.txt").read())
         except:
             put_markdown("Sorry, this problem does not yet have a problem statement.")
 

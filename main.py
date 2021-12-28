@@ -148,5 +148,5 @@ def register():
         print(e)
 
 if __name__ == '__main__':
-    os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = 'node_modules/google-service-key.json'
+    os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = 'google-service-key.json'
     pywebio.start_server(register, port=55)
