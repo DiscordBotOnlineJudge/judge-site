@@ -251,7 +251,7 @@ def judgeSubmission(settings, username, problem, lang, cleaned):
         judges = settings.find_one({"type":"judge", "status":0})
 
         if judges is None:
-            put_text("All of the judge's grading servers are currently in use. Please re-enter your source code in a few seconds.\nType `-status` to see the current judge statuses")
+            put_markdown("All of the judge's grading servers are currently offline or in use. Please resubmit in a few seconds.")
             return
 
         settings.update_one({"_id":judges['_id']}, {"$set":{"status":1}})
