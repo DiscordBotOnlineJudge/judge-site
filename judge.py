@@ -272,7 +272,7 @@ def judgeSubmission(settings, username, problem, lang, cleaned):
         rpc.start()
 
         msgContent = "```\nWaiting for response from Judge " + str(avail) + "\n```"
-        with popup("submission"):
+        with popup("Submission execution results"):
             with use_scope('submission1'):
                 clear(scope = "submission1")
                 put_markdown(msgContent)
