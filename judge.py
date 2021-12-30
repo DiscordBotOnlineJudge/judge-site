@@ -289,13 +289,13 @@ def judgeSubmission(settings, username, problem, lang, cleaned):
                             print("Edited empty message")
                     time.sleep(1)
 
-        finalscore = return_dict['finalscore']
+            finalscore = return_dict['finalscore']
 
-        output = settings.find_one({"_id":judges['_id']})['output'].replace("diff", "").replace("`", "")
-        with use_scope('submission1'):
-            clear(scope = "submission1")
-            put_markdown("```diff\n" + output + "\n```")
-        scroll_to(position = "bottom")
+            output = settings.find_one({"_id":judges['_id']})['output'].replace("diff", "").replace("`", "")
+            with use_scope('submission1'):
+                clear(scope = "submission1")
+                put_markdown("```diff\n" + output + "\n```")
+            scroll_to(position = "bottom")
 
         if len(problm['contest']) > 0 and finalscore >= 0:
             updateScore(settings, problm['contest'], problem, username, finalscore, ct)
