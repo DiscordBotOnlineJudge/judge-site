@@ -178,7 +178,8 @@ def problemInterface(settings, problem, user):
         lang = input("Type a language to submit in:")
 
         if settings.find_one({"type":"lang", "name":lang}) is None:
-            put_markdown("**`Error: Language not found`**")
+            with popup("Judging error"):
+                put_markdown("Error: Language not found")
             scroll_to(position = "bottom")
         else:
             res = textarea('Paste your code into the editor below:', code=True)
@@ -189,7 +190,8 @@ def problemInterface(settings, problem, user):
             lang = input("Type a language to resubmit in:")
 
             if settings.find_one({"type":"lang", "name":lang}) is None:
-                put_markdown("**`Error: Language not found`**")
+                with popup("Judging error"):
+                    put_markdown("Error: Language not found")
                 scroll_to(position = "bottom")
             else:
                 res = textarea('Paste your code into the editor below:', code=True)
@@ -251,7 +253,8 @@ def judgeSubmission(settings, username, problem, lang, cleaned):
         judges = settings.find_one({"type":"judge", "status":0})
 
         if judges is None:
-            put_markdown("All of the judge's grading servers are currently offline or in use. Please resubmit in a few seconds.")
+            with popup("Judging error"):
+                put_markdown("All of the judge's grading servers are currently offline or in use. Please resubmit in a few seconds.")
             return
 
         settings.update_one({"_id":judges['_id']}, {"$set":{"status":1}})
