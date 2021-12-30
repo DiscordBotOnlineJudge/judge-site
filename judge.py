@@ -1,5 +1,5 @@
 from pywebio.input import input, FLOAT, file_upload, textarea
-from pywebio.output import put_text, put_html, put_markdown, put_table, put_file, scroll_to, use_scope, clear
+from pywebio.output import put_text, put_html, put_markdown, put_table, put_file, scroll_to, use_scope, clear, popup
 from google.cloud import storage
 import contests
 import sys
@@ -272,21 +272,22 @@ def judgeSubmission(settings, username, problem, lang, cleaned):
         rpc.start()
 
         msgContent = "```\nWaiting for response from Judge " + str(avail) + "\n```"
-        with use_scope('submission1'):
-            clear(scope = "submission1")
-            put_markdown(msgContent)
+        with popup("submission"):
+            with use_scope('submission1'):
+                clear(scope = "submission1")
+                put_markdown(msgContent)
 
-            while rpc.is_alive():
-                newcontent = settings.find_one({"_id":judges['_id']})['output'].replace("diff", "").replace("`", "")
-                if newcontent != msgContent and len(newcontent) > 0:
-                    msgContent = newcontent
-                    try:
-                        clear(scope = "submission1")
-                        put_markdown("```diff\n" + msgContent + "\n```")
-                        scroll_to(position = "bottom")
-                    except:
-                        print("Edited empty message")
-                time.sleep(1)
+                while rpc.is_alive():
+                    newcontent = settings.find_one({"_id":judges['_id']})['output'].replace("diff", "").replace("`", "")
+                    if newcontent != msgContent and len(newcontent) > 0:
+                        msgContent = newcontent
+                        try:
+                            clear(scope = "submission1")
+                            put_markdown("```diff\n" + msgContent + "\n```")
+                            scroll_to(position = "bottom")
+                        except:
+                            print("Edited empty message")
+                    time.sleep(1)
 
         finalscore = return_dict['finalscore']
 
