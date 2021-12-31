@@ -82,7 +82,7 @@ def register():
                 ['Problem Name', 'Points/Difficulty', 'Problem Types', 'Authors'],
             ]
             for x in arr:
-                data.append([x[1], x[0], ", ".join(x[2]), ", ".join(x[3])])
+                data.append([x[0], x[1], ", ".join(x[2]), ", ".join(x[3])])
             put_markdown("## All published problems on the judge:")
             put_table(data)
 
@@ -93,7 +93,7 @@ def register():
                     ['Problem Name', 'Points/Difficulty', 'Contest', 'Problem Types', 'Authors'],
                 ]
                 for x in arr:
-                    data.append([x[1], x[0], x[2], ", ".join(x[3]), ", ".join(x[4])])
+                    data.append([x[0], x[1], x[2], ", ".join(x[3]), ", ".join(x[4])])
                 put_markdown("## All private problems:")
                 put_table(data)
                 scroll_to(position = "bottom")
