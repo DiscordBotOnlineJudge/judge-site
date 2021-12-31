@@ -77,23 +77,23 @@ def register():
 
             put_text("Successfully created contest " + str(name) + "! You may now close this page.")
         elif op.lower() == 's':
-            arr = sorted([(x['name'], x['points'], x['authors']) for x in settings.find({"type":"problem", "published":True})], key = cmp_to_key(cmpProblem))
+            arr = sorted([(x['name'], x['points'], x['types'], x['authors']) for x in settings.find({"type":"problem", "published":True})], key = cmp_to_key(cmpProblem))
             data = [
-                ['Problem Name', 'Points/Difficulty', 'Authors'],
+                ['Problem Name', 'Points/Difficulty', 'Problem Types', 'Authors'],
             ]
             for x in arr:
-                data.append([x[1], x[0], ", ".join(x[2])])
+                data.append([x[1], x[0], ", ".join(x[2]), ", ".join(x[3])])
             put_markdown("## All published problems on the judge:")
             put_table(data)
 
             pswd = input("To view private problems, type in the administrator password:")
             if pswd == settings.find_one({"type":"password"})['password']:
-                arr = sorted([(x['name'], x['points'], x['contest'], x['authors']) for x in settings.find({"type":"problem", "published":False})], key = cmp_to_key(cmpProblem))
+                arr = sorted([(x['name'], x['points'], x['contest'], x['types'], x['authors']) for x in settings.find({"type":"problem", "published":False})], key = cmp_to_key(cmpProblem))
                 data = [
-                    ['Problem Name', 'Points/Difficulty', 'Contest', 'Authors'],
+                    ['Problem Name', 'Points/Difficulty', 'Contest', 'Problem Types', 'Authors'],
                 ]
                 for x in arr:
-                    data.append([x[1], x[0], x[2], ", ".join(x[3])])
+                    data.append([x[1], x[0], x[2], ", ".join(x[3]), ", ".join(x[4])])
                 put_markdown("## All private problems:")
                 put_table(data)
                 scroll_to(position = "bottom")
