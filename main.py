@@ -1,5 +1,5 @@
 import pywebio
-from pywebio.input import input, FLOAT, file_upload
+from pywebio.input import input, FLOAT, file_upload, textarea
 from pywebio.output import put_text, put_html, put_markdown, put_table, put_file, scroll_to
 import pymongo
 import os
@@ -7,6 +7,7 @@ import dns
 import time
 import judge
 import sys
+from google.cloud import storage
 from functools import cmp_to_key
 from pymongo import MongoClient
 
@@ -72,6 +73,17 @@ def register():
             end = input("Enter the contest end time in the format YYYY MM DD HH MM SS (24-hour time):\n")
             problems = int(input("Enter the number of problems in the contest:", type=FLOAT))
             ll = int(input("How long should the participant window be (in seconds): ", type=FLOAT))
+
+            inst = textarea("Paste the contest instructions here (will be shown as a user starts a contest)")
+            with open("instructions.txt", "w") as f:
+                f.write(inst)
+                f.flush()
+                f.close()
+            
+            stc = storage.Client()
+            bucket = stc.get_bucket("discord-bot-oj-file-storage")
+            blob = bucket.blob("ContestInstructions/" + name + ".txt")
+            blob.upload_from_filename("instructions.txt")
 
             settings.insert_one({"type":"contest", "name":name, "start":start, "end":end, "problems":problems, "len":ll})
 
