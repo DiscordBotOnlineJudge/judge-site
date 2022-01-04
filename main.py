@@ -182,6 +182,10 @@ def register():
         put_button("View all problems", onclick = view_problems, outline = True)
         put_button("About page", onclick = about, outline = True)
 
+        put_markdown("### Web online judge")
+        put_button("Open/submit to a problem", onclick = view_problem, outline = True)
+        put_button("Join a contest", onclick = join, outline = True)
+        
         login()
 
     except Exception as e:
