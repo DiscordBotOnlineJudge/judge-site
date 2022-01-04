@@ -1,6 +1,6 @@
 import pywebio
 from pywebio.input import input, FLOAT, file_upload, textarea, select
-from pywebio.output import put_text, put_html, put_markdown, put_table, put_file, scroll_to, put_button, use_scope, clear, toast
+from pywebio.output import put_text, put_html, put_markdown, put_table, put_file, scroll_to, put_button, use_scope, clear, toast, popup
 from pywebio.session import set_env
 import pymongo
 import os
@@ -175,6 +175,52 @@ def view_problem():
             clear(scope = "scope1")
     busy = False
 
+def problemInterface(settings, problem, user):
+    try:
+        sc = storage.Client()
+        bucket = sc.get_bucket("discord-bot-oj-file-storage")
+        file = bucket.blob("ProblemStatements/" + problem + ".txt")
+
+        found = settings.find_one({"type":"problem", "name":problem})
+        if found is None:
+            put_text("Error: Problem not found")
+            return
+        if judge.perms(settings, found, user):
+            put_text("Error: problem not found")
+            return
+        
+        try:
+            file.download_to_filename("problem.txt")
+            put_markdown("### Problem statement for problem `" + problem + "`")
+            put_markdown(open("problem.txt").read())
+        except:
+            put_markdown("Sorry, this problem does not yet have a problem statement.")
+
+        put_button("Submit Solution", outline = True, onclick = run_submit)
+
+    except Exception as e:
+        put_text("An error occurred. Please make sure your input is valid. Please reload to try again or contact me.")
+        exc_type, exc_obj, exc_tb = sys.exc_info()
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        print(exc_type, fname, exc_tb.tb_lineno)
+        print(e)
+
+def run_submit(settings, problem, user):
+    global busy
+    busy = True
+    lang = input("Type a language to submit in:")
+
+    if settings.find_one({"type":"lang", "name":lang}) is None:
+        with popup("Judging error"):
+            put_markdown("Error: Language not found")
+        scroll_to(position = "bottom")
+    else:
+        res = textarea('Paste your code into the editor below:', code=True)
+        judge.judgeSubmission(settings, user, problem, lang, res)
+    time.sleep(3)
+
+    busy = False
+
 def login():
     with use_scope("scope2"):
         clear(scope = "scope1")
@@ -237,6 +283,34 @@ def rem():
         except:
             toast("Please login to use this command", color = "error")
             clear(scope = "scope1")
+
+def problemInterface(settings, problem, user):
+    try:
+        sc = storage.Client()
+        bucket = sc.get_bucket("discord-bot-oj-file-storage")
+        file = bucket.blob("ProblemStatements/" + problem + ".txt")
+
+        found = settings.find_one({"type":"problem", "name":problem})
+        if found is None:
+            put_text("Error: Problem not found")
+            return
+        if perms(settings, found, user):
+            put_text("Error: problem not found")
+            return
+        
+        try:
+            file.download_to_filename("problem.txt")
+            put_markdown("### Problem statement for problem `" + problem + "`")
+            put_markdown(open("problem.txt").read())
+        except:
+            put_markdown("Sorry, this problem does not yet have a problem statement.")
+
+    except Exception as e:
+        put_text("An error occurred. Please make sure your input is valid. Please reload to try again or contact me.")
+        exc_type, exc_obj, exc_tb = sys.exc_info()
+        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+        print(exc_type, fname, exc_tb.tb_lineno)
+        print(e)
 
 def register():
     set_env(title = "DBOJ Online Console")

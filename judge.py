@@ -154,58 +154,6 @@ def perms(settings, found, author):
         return False # Has contest participant perms
     return (not found['published']) or (found['status'] != "s")
 
-def problemInterface(settings, problem, user):
-    try:
-        sc = storage.Client()
-        bucket = sc.get_bucket("discord-bot-oj-file-storage")
-        file = bucket.blob("ProblemStatements/" + problem + ".txt")
-
-        found = settings.find_one({"type":"problem", "name":problem})
-        if found is None:
-            put_text("Error: Problem not found")
-            return
-        if perms(settings, found, user):
-            put_text("Error: problem not found")
-            return
-        
-        try:
-            file.download_to_filename("problem.txt")
-            put_markdown("### Problem statement for problem `" + problem + "`")
-            put_markdown(open("problem.txt").read())
-        except:
-            put_markdown("Sorry, this problem does not yet have a problem statement.")
-
-        lang = input("Type a language to submit in:")
-
-        if settings.find_one({"type":"lang", "name":lang}) is None:
-            with popup("Judging error"):
-                put_markdown("Error: Language not found")
-            scroll_to(position = "bottom")
-        else:
-            res = textarea('Paste your code into the editor below:', code=True)
-            judgeSubmission(settings, user, problem, lang, res)
-        time.sleep(3)
-
-        while True:
-            lang = input("Type a language to resubmit in:")
-
-            if settings.find_one({"type":"lang", "name":lang}) is None:
-                with popup("Judging error"):
-                    put_markdown("Error: Language not found")
-                scroll_to(position = "bottom")
-            else:
-                res = textarea('Paste your code into the editor below:', code=True)
-                judgeSubmission(settings, user, problem, lang, res)
-            time.sleep(3)
-
-    except Exception as e:
-        put_text("An error occurred. Please make sure your input is valid. Please reload to try again or contact me.")
-        exc_type, exc_obj, exc_tb = sys.exc_info()
-        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-        print(exc_type, fname, exc_tb.tb_lineno)
-        print(e)
-
-
 def getLen(settings, contest):
     return settings.find_one({"type":"contest", "name":contest})['len']
 
