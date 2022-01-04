@@ -1,6 +1,6 @@
 import pywebio
 from pywebio.input import input, FLOAT, file_upload, textarea, select
-from pywebio.output import put_text, put_html, put_markdown, put_table, put_file, scroll_to, put_button, use_scope, clear
+from pywebio.output import put_text, put_html, put_markdown, put_table, put_file, scroll_to, put_button, use_scope, clear, toast
 from pywebio.session import set_env
 import pymongo
 import os
@@ -135,7 +135,7 @@ def view_problem():
         try:
             judge.problemInterface(settings, name, user['name'])
         except:
-            put_markdown("Please login to use this command")
+            toast("Please login to use this command", color = "error")
 
 def login():
     with use_scope("scope1"):
@@ -161,7 +161,7 @@ def join():
                 return
             judge.instructions(name)
         except:
-            put_markdown("Please login to use this command")
+            toast("Please login to use this command", color = "error")
 
 def rank():
     with use_scope("scope1"):
@@ -178,7 +178,7 @@ def rem():
         try:
             put_markdown("## Time remaining for joined contests:\n" + judge.remaining(settings, user['name']))
         except:
-            put_markdown("Please login to use this command")
+            toast("Please login to use this command", color = "error")
 
 def register():
     set_env(title = "DBOJ Online Console")
