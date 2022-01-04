@@ -185,7 +185,8 @@ def register():
         put_markdown("### Web online judge")
         put_button("Open/submit to a problem", onclick = view_problem, outline = True)
         put_button("Join a contest", onclick = join, outline = True)
-        
+        put_button("See remaining time on contest window", onclick = rem, outline = True)
+
         login()
 
     except Exception as e:
