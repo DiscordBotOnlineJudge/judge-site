@@ -155,7 +155,7 @@ def join():
     with use_scope("scope1"):
         clear(scope = "scope1")
 
-        put_markdown("Select the contest to join:")
+        put_markdown("## Select the contest to join:")
         op = [x['name'] for x in settings.find({"type":"contest"})]
         name = select(options = op)
 
