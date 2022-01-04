@@ -1,6 +1,6 @@
 import pywebio
 from pywebio.input import input, FLOAT, file_upload, textarea, select
-from pywebio.output import put_text, put_html, put_markdown, put_table, put_file, scroll_to, put_button, use_scope, clear
+from pywebio.output import put_text, put_html, put_markdown, put_table, put_file, scroll_to, put_button, use_scope, clear, popup
 from pywebio.session import set_env
 import pymongo
 import os
@@ -25,7 +25,7 @@ def cmpProblem(a, b):
         return a[1] - b[1]
 
 def enterPassword():
-    with use_scope("scope1"):
+    with popup("scope1"):
         getUserPswd = input("Please enter the administrator password:")
         if getUserPswd == settings.find_one({"type":"password"})['password']:
             return True
@@ -72,7 +72,7 @@ def info():
         put_markdown(open("problem_setting.md", "r").read())
 
 def contest():
-    with use_scope("scope1"):
+    with popup("scope1"):
         clear(scope = "scope1")
 
         put_markdown("## Setting up a contest")
@@ -135,7 +135,7 @@ def view_problem():
         judge.problemInterface(settings, name, user['name'])
 
 def login():
-    with use_scope("scope1"):
+    with popup("scope1"):
         clear(scope = "scope1")
         pswd = input("Please enter your account password to login")
         global user
@@ -146,7 +146,7 @@ def login():
         put_markdown("**Logged in as `" + user['name'] + "`**")
 
 def join():
-    with use_scope("scope1"):
+    with popup("scope1"):
         clear(scope = "scope1")
         put_markdown("Select the contest to join:")
         op = [x['name'] for x in settings.find({"type":"contest"})]
@@ -167,7 +167,8 @@ def rank():
 
 def rem():
     global user
-    put_markdown("## Time remaining for joined contests:\n" + judge.remaining(settings, user['name']))
+    with use_scope("scope1"):
+        put_markdown("## Time remaining for joined contests:\n" + judge.remaining(settings, user['name']))
 
 def register():
     set_env(title = "DBOJ Online Console")
@@ -185,6 +186,7 @@ def register():
         put_markdown("### Web online judge")
         put_button("Open/submit to a problem", onclick = view_problem, outline = True)
         put_button("Join a contest", onclick = join, outline = True)
+        put_button("See remaining time on contest window", onclick = rem, outline = True)
         
         login()
 
