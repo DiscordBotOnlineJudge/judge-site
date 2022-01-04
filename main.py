@@ -169,12 +169,14 @@ def view_problem():
 
         global user
         try:
-            if "" in user: # Test logged in
+            if "name" in user: # Test logged in
                 pass
-            problemInterface(settings, name, user['name'])
         except:
             toast("Please login to use this command", color = "error")
             clear(scope = "scope1")
+            return
+
+        problemInterface(settings, name, user['name'])
         
     busy = False
 
@@ -196,10 +198,12 @@ def problemInterface(settings, problem, user):
             file.download_to_filename("problem.txt")
             put_markdown("### Problem statement for problem `" + problem + "`")
             put_markdown(open("problem.txt").read())
-            print("flag")
-            put_button("Submit Solution", outline = True, onclick = run_submit)
         except:
             put_markdown("Sorry, this problem does not yet have a problem statement.")
+
+        global p
+        p = problem
+        put_button("Submit solution", onclick = run_submit, outline = True)
 
     except Exception as e:
         put_text("An error occurred. Please make sure your input is valid. Please reload to try again or contact me.")
@@ -208,8 +212,11 @@ def problemInterface(settings, problem, user):
         print(exc_type, fname, exc_tb.tb_lineno)
         print(e)
 
-def run_submit(settings, problem, user):
+def run_submit():
     global busy
+    global user
+    global p
+    problem = p
     busy = True
     lang = input("Type a language to submit in:")
 
@@ -287,34 +294,6 @@ def rem():
         except:
             toast("Please login to use this command", color = "error")
             clear(scope = "scope1")
-
-def problemInterface(settings, problem, user):
-    try:
-        sc = storage.Client()
-        bucket = sc.get_bucket("discord-bot-oj-file-storage")
-        file = bucket.blob("ProblemStatements/" + problem + ".txt")
-
-        found = settings.find_one({"type":"problem", "name":problem})
-        if found is None:
-            put_text("Error: Problem not found")
-            return
-        if judge.perms(settings, found, user):
-            put_text("Error: problem not found")
-            return
-        
-        try:
-            file.download_to_filename("problem.txt")
-            put_markdown("### Problem statement for problem `" + problem + "`")
-            put_markdown(open("problem.txt").read())
-        except:
-            put_markdown("Sorry, this problem does not yet have a problem statement.")
-
-    except Exception as e:
-        put_text("An error occurred. Please make sure your input is valid. Please reload to try again or contact me.")
-        exc_type, exc_obj, exc_tb = sys.exc_info()
-        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-        print(exc_type, fname, exc_tb.tb_lineno)
-        print(e)
 
 def register():
     set_env(title = "DBOJ Online Console")
