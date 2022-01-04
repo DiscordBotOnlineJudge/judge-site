@@ -155,7 +155,8 @@ def join():
     with use_scope("scope1"):
         clear(scope = "scope1")
 
-        put_markdown("## Select the contest to join:")
+        put_markdown("## Joining a contest")
+        put_markdown("### Select the contest to join:")
         op = [x['name'] for x in settings.find({"type":"contest"})]
         name = select(options = op)
 
@@ -172,7 +173,7 @@ def rank():
     with use_scope("scope1"):
         clear(scope = "scope1")
         put_markdown("## View contest rankings:")
-        put_markdown("Select the contest to view:")
+        put_markdown("### Select the contest to view:")
         op = [x['name'] for x in settings.find({"type":"contest"})]
         contest = select(options = op)
         put_markdown(judge.getScoreboard(settings, contest))
