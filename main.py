@@ -132,6 +132,8 @@ def view_problem():
     with use_scope("scope1"):
         clear(scope = "scope1")
         name = input("Enter the problem to open:")
+
+        global user
         try:
             judge.problemInterface(settings, name, user['name'])
         except:
@@ -156,6 +158,7 @@ def join():
         op = [x['name'] for x in settings.find({"type":"contest"})]
         name = select(options = op)
 
+        global user
         try:
             if not judge.joinContest(settings, name, user['name']):
                 return
