@@ -61,6 +61,10 @@ def private_problems():
     busy = False
 
 def lang():
+    global busy
+    if busy:
+        toast("Please complete the current operation before starting another")
+        return
     with use_scope("scope1"):
         clear(scope = "scope1")
         data = [["Language", "Compilation", "Execution"]]
@@ -74,6 +78,10 @@ def lang():
         put_table(data)
 
 def info():
+    global busy
+    if busy:
+        toast("Please complete the current operation before starting another")
+        return
     with use_scope("scope1"):
         clear(scope = "scope1")
         put_markdown(open("problem_setting.md", "r").read())
@@ -120,6 +128,10 @@ def contest():
     busy = False
 
 def view_problems():
+    global busy
+    if busy:
+        toast("Please complete the current operation before starting another")
+        return
     with use_scope("scope1"):
         clear(scope = "scope1")
         arr = sorted([(x['name'], x['points'], x['types'], x['authors']) for x in settings.find({"type":"problem", "published":True})], key = cmp_to_key(cmpProblem))
@@ -137,6 +149,10 @@ def view_problems():
         put_button("View private problems", onclick = private_problems, outline = True)
 
 def about():
+    global busy
+    if busy:
+        toast("Please complete the current operation before starting another")
+        return
     with use_scope("scope1"):
         clear(scope = "scope1")
         put_markdown(open("about.md", "r").read())
@@ -210,6 +226,10 @@ def rank():
     busy = False
 
 def rem():
+    global busy
+    if busy:
+        toast("Please complete the current operation before starting another")
+        return
     with use_scope("scope1"):
         global user
         try:
