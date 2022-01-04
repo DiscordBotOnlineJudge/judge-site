@@ -72,6 +72,11 @@ def info():
         put_markdown(open("problem_setting.md", "r").read())
 
 def contest():
+    global busy
+    if busy:
+        toast("Please complete the current operation before starting another")
+        return
+    busy = True
     with use_scope("scope1"):
         clear(scope = "scope1")
 
@@ -129,6 +134,11 @@ def about():
         put_markdown(open("about.md", "r").read())
 
 def view_problem():
+    global busy
+    if busy:
+        toast("Please complete the current operation before starting another")
+        return
+    busy = True
     with use_scope("scope1"):
         clear(scope = "scope1")
         name = input("Enter the problem to open:")
@@ -152,6 +162,11 @@ def login():
         put_markdown("**Logged in as `" + user['name'] + "`**")
 
 def join():
+    global busy
+    if busy:
+        toast("Please complete the current operation before starting another")
+        return
+    busy = True
     with use_scope("scope1"):
         clear(scope = "scope1")
 
@@ -170,6 +185,11 @@ def join():
             clear(scope = "scope1")
 
 def rank():
+    global busy
+    if busy:
+        toast("Please complete the current operation before starting another")
+        return
+    busy = True
     with use_scope("scope1"):
         clear(scope = "scope1")
         put_markdown("## View contest rankings:")
@@ -193,6 +213,9 @@ def register():
     try:
         put_markdown("# Welcome to the Discord Bot Online Judge administrator console!")
         
+        global busy
+        busy = False
+
         put_button("Problem/Contest setting documentation", onclick = info, outline = True)
         put_button("Language Info", onclick = lang, outline = True)
         put_button("View contest rankings", onclick = rank, outline = True)
