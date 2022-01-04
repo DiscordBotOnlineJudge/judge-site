@@ -138,6 +138,7 @@ def view_problem():
             judge.problemInterface(settings, name, user['name'])
         except:
             toast("Please login to use this command", color = "error")
+            clear(scope = "scope1")
 
 def login():
     with use_scope("scope1"):
@@ -165,6 +166,7 @@ def join():
             judge.instructions(name)
         except:
             toast("Please login to use this command", color = "error")
+            clear(scope = "scope1")
 
 def rank():
     with use_scope("scope1"):
@@ -182,6 +184,7 @@ def rem():
             put_markdown("## Time remaining for joined contests:\n" + judge.remaining(settings, user['name']))
         except:
             toast("Please login to use this command", color = "error")
+            clear(scope = "scope1")
 
 def register():
     set_env(title = "DBOJ Online Console")
