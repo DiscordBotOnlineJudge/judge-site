@@ -171,10 +171,11 @@ def view_problem():
         try:
             if "" in user: # Test logged in
                 pass
+            problemInterface(settings, name, user['name'])
         except:
             toast("Please login to use this command", color = "error")
             clear(scope = "scope1")
-        problemInterface(settings, name, user['name'])
+        
     busy = False
 
 def problemInterface(settings, problem, user):
