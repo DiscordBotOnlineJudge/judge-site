@@ -178,7 +178,7 @@ def rank():
         put_markdown(judge.getScoreboard(settings, contest))
 
 def rem():
-    with use_scope("scope1"):
+    with use_scope("scope2"):
         global user
         try:
             put_markdown("## Time remaining for joined contests:\n" + judge.remaining(settings, user['name']))
