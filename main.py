@@ -33,6 +33,12 @@ def enterPassword():
         return False
 
 def private_problems():
+    global busy
+    if busy:
+        toast("Please complete the current operation before starting another")
+        return
+    busy = True
+
     global clicked
     if clicked:
         return
@@ -52,6 +58,7 @@ def private_problems():
     else:
         put_markdown("Sorry, the password you entered was incorrect.")
         scroll_to(position = "bottom")
+    busy = False
 
 def lang():
     with use_scope("scope1"):
@@ -110,6 +117,7 @@ def contest():
         settings.insert_one({"type":"contest", "name":name, "start":start, "end":end, "problems":problems, "len":ll})
 
         put_text("Successfully created contest `" + str(name) + "`! You may now close this page.")
+    busy = False
 
 def view_problems():
     with use_scope("scope1"):
@@ -149,6 +157,7 @@ def view_problem():
         except:
             toast("Please login to use this command", color = "error")
             clear(scope = "scope1")
+    busy = False
 
 def login():
     with use_scope("scope2"):
@@ -183,6 +192,7 @@ def join():
         except:
             toast("Please login to use this command", color = "error")
             clear(scope = "scope1")
+    busy = False
 
 def rank():
     global busy
@@ -197,6 +207,7 @@ def rank():
         op = [x['name'] for x in settings.find({"type":"contest"})]
         contest = select(options = op)
         put_markdown(judge.getScoreboard(settings, contest))
+    busy = False
 
 def rem():
     with use_scope("scope1"):
