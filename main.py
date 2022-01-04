@@ -169,7 +169,8 @@ def view_problem():
 
         global user
         try:
-            user = user # Test logged in
+            if "" in user: # Test logged in
+                pass
         except:
             toast("Please login to use this command", color = "error")
             clear(scope = "scope1")
