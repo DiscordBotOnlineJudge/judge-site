@@ -1,6 +1,7 @@
 import pywebio
 from pywebio.input import input, FLOAT, file_upload, textarea
 from pywebio.output import put_text, put_html, put_markdown, put_table, put_file, scroll_to
+from pywebio.session import set_env
 import pymongo
 import os
 import dns
@@ -31,6 +32,8 @@ def enterPassword():
     return False
 
 def register():
+    set_env(title = "DBOJ Online Console")
+
     try:
         put_markdown("# Welcome to the Discord Bot Online Judge administrator console!")
         put_table([
@@ -87,7 +90,7 @@ def register():
 
             settings.insert_one({"type":"contest", "name":name, "start":start, "end":end, "problems":problems, "len":ll})
 
-            put_text("Successfully created contest " + str(name) + "! You may now close this page.")
+            put_text("Successfully created contest `" + str(name) + "`! You may now close this page.")
         elif op.lower() == 's':
             arr = sorted([(x['name'], x['points'], x['types'], x['authors']) for x in settings.find({"type":"problem", "published":True})], key = cmp_to_key(cmpProblem))
             data = [
