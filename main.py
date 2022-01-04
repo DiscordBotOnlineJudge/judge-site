@@ -173,7 +173,7 @@ def view_problem():
         except:
             toast("Please login to use this command", color = "error")
             clear(scope = "scope1")
-        judge.problemInterface(settings, name, user['name'])
+        problemInterface(settings, name, user['name'])
     busy = False
 
 def problemInterface(settings, problem, user):
