@@ -1,6 +1,6 @@
 import pywebio
 from pywebio.input import input, FLOAT, file_upload, textarea
-from pywebio.output import put_text, put_html, put_markdown, put_table, put_file, scroll_to
+from pywebio.output import put_text, put_html, put_markdown, put_table, put_file, scroll_to, put_button
 from pywebio.session import set_env
 import pymongo
 import os
@@ -30,6 +30,22 @@ def enterPassword():
         return True
     put_markdown("Sorry, the password you entered was incorrect. Please reload the page to try again.")
     return False
+
+def private_problems():
+    pswd = input("To view private problems, type in the administrator password:")
+    if pswd == settings.find_one({"type":"password"})['password']:
+        arr = sorted([(x['name'], x['points'], x['contest'], x['types'], x['authors']) for x in settings.find({"type":"problem", "published":False})], key = cmp_to_key(cmpProblem))
+        data = [
+            ['Problem Name', 'Points/Difficulty', 'Contest', 'Problem Types', 'Authors'],
+        ]
+        for x in arr:
+            data.append([x[0], x[1], x[2], ", ".join(x[3]), ", ".join(x[4])])
+        put_markdown("## All private problems:")
+        put_table(data)
+        scroll_to(position = "bottom")
+    else:
+        put_markdown("Sorry, the password you entered was incorrect.")
+        scroll_to(position = "bottom")
 
 def register():
     set_env(title = "DBOJ Online Console")
@@ -101,20 +117,8 @@ def register():
             put_markdown("## All published problems on the judge:")
             put_table(data)
 
-            pswd = input("To view private problems, type in the administrator password:")
-            if pswd == settings.find_one({"type":"password"})['password']:
-                arr = sorted([(x['name'], x['points'], x['contest'], x['types'], x['authors']) for x in settings.find({"type":"problem", "published":False})], key = cmp_to_key(cmpProblem))
-                data = [
-                    ['Problem Name', 'Points/Difficulty', 'Contest', 'Problem Types', 'Authors'],
-                ]
-                for x in arr:
-                    data.append([x[0], x[1], x[2], ", ".join(x[3]), ", ".join(x[4])])
-                put_markdown("## All private problems:")
-                put_table(data)
-                scroll_to(position = "bottom")
-            else:
-                put_markdown("Sorry, the password you entered was incorrect.")
-                scroll_to(position = "bottom")
+            put_button("View private problems", onclick = private_problems, outline = True)
+
         elif op.lower() == 'u':
             f = file_upload("Upload a file")
             open('asset/'+f['filename'], 'wb').write(f['content'])  
