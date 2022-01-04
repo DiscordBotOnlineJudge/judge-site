@@ -252,6 +252,7 @@ def join():
         global user
         try:
             if not judge.joinContest(settings, name, user['name']):
+                busy = False
                 return
             judge.instructions(name)
         except:
