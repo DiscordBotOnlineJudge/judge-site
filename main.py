@@ -154,7 +154,12 @@ def register():
     try:
         put_markdown("# Welcome to the Discord Bot Online Judge administrator console!")
         
-        
+        put_button("Problem/Contest setting documentation", onclick = info, outline = True)
+        put_button("Language Info", onclick = lang, outline = True)
+        put_button("View contest rankings", onclick = rank, outline = True)
+        put_button("Set up a new contest", onclick = contest, outline = True)
+        put_button("View all problems", onclick = view_problems, outline = True)
+        put_button("About page", onclick = about, outline = True)
 
     except Exception as e:
         put_text("An error occurred. Please make sure your input is valid. Please reload to try again or contact me.")
