@@ -169,10 +169,11 @@ def view_problem():
 
         global user
         try:
-            judge.problemInterface(settings, name, user['name'])
+            user = user # Test logged in
         except:
             toast("Please login to use this command", color = "error")
             clear(scope = "scope1")
+        judge.problemInterface(settings, name, user['name'])
     busy = False
 
 def problemInterface(settings, problem, user):
