@@ -199,6 +199,7 @@ def problemInterface(settings, problem, user):
         except:
             put_markdown("Sorry, this problem does not yet have a problem statement.")
 
+        print("flag")
         put_button("Submit Solution", outline = True, onclick = run_submit)
 
     except Exception as e:
