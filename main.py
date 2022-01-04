@@ -32,6 +32,11 @@ def enterPassword():
     return False
 
 def private_problems():
+    global clicked
+    if clicked:
+        return
+    clicked = True
+
     pswd = input("To view private problems, type in the administrator password:")
     if pswd == settings.find_one({"type":"password"})['password']:
         arr = sorted([(x['name'], x['points'], x['contest'], x['types'], x['authors']) for x in settings.find({"type":"problem", "published":False})], key = cmp_to_key(cmpProblem))
@@ -117,8 +122,10 @@ def register():
             put_markdown("## All published problems on the judge:")
             put_table(data)
 
-            put_button("View private problems", onclick = private_problems, outline = True)
+            global clicked
+            clicked = False
 
+            put_button("View private problems", onclick = private_problems, outline = True)
         elif op.lower() == 'u':
             f = file_upload("Upload a file")
             open('asset/'+f['filename'], 'wb').write(f['content'])  
