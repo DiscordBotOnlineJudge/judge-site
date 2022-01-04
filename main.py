@@ -196,11 +196,9 @@ def problemInterface(settings, problem, user):
             file.download_to_filename("problem.txt")
             put_markdown("### Problem statement for problem `" + problem + "`")
             put_markdown(open("problem.txt").read())
+            put_button("Submit Solution", outline = True, onclick = run_submit)
         except:
             put_markdown("Sorry, this problem does not yet have a problem statement.")
-
-        print("flag")
-        put_button("Submit Solution", outline = True, onclick = run_submit)
 
     except Exception as e:
         put_text("An error occurred. Please make sure your input is valid. Please reload to try again or contact me.")
