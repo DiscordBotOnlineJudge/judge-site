@@ -130,6 +130,10 @@ def about():
 
 def view_problem():
     with use_scope("scope1"):
+        if user is None:
+            put_markdown("Please login to use this command")
+            return
+
         clear(scope = "scope1")
         name = input("Enter the problem to open:")
         judge.problemInterface(settings, name, user['name'])
@@ -148,6 +152,11 @@ def login():
 def join():
     with use_scope("scope1"):
         clear(scope = "scope1")
+
+        if user is None:
+            put_markdown("Please login to use this command")
+            return
+
         put_markdown("Select the contest to join:")
         op = [x['name'] for x in settings.find({"type":"contest"})]
         name = select(options = op)
@@ -166,8 +175,12 @@ def rank():
         put_markdown(judge.getScoreboard(settings, contest))
 
 def rem():
-    global user
-    put_markdown("## Time remaining for joined contests:\n" + judge.remaining(settings, user['name']))
+    with use_scope("scope1"):
+        global user
+        if user is None:
+            put_markdown("Please login to use this command")
+            return
+        put_markdown("## Time remaining for joined contests:\n" + judge.remaining(settings, user['name']))
 
 def register():
     set_env(title = "DBOJ Online Console")
