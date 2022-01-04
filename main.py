@@ -25,11 +25,12 @@ def cmpProblem(a, b):
         return a[1] - b[1]
 
 def enterPassword():
-    getUserPswd = input("Please enter the administrator password:")
-    if getUserPswd == settings.find_one({"type":"password"})['password']:
-        return True
-    put_markdown("Sorry, the password you entered was incorrect. Please reload the page to try again.")
-    return False
+    with use_scope("scope1"):
+        getUserPswd = input("Please enter the administrator password:")
+        if getUserPswd == settings.find_one({"type":"password"})['password']:
+            return True
+        put_markdown("Sorry, the password you entered was incorrect. Please reload the page to try again.")
+        return False
 
 def private_problems():
     global clicked
@@ -180,6 +181,8 @@ def register():
         put_button("Set up a new contest", onclick = contest, outline = True)
         put_button("View all problems", onclick = view_problems, outline = True)
         put_button("About page", onclick = about, outline = True)
+
+        login()
 
     except Exception as e:
         put_text("An error occurred. Please make sure your input is valid. Please reload to try again or contact me.")
