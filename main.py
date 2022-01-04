@@ -295,7 +295,7 @@ def problemInterface(settings, problem, user):
         if found is None:
             put_text("Error: Problem not found")
             return
-        if perms(settings, found, user):
+        if judge.perms(settings, found, user):
             put_text("Error: problem not found")
             return
         
