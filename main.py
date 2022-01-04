@@ -1,6 +1,6 @@
 import pywebio
 from pywebio.input import input, FLOAT, file_upload, textarea, select
-from pywebio.output import put_text, put_html, put_markdown, put_table, put_file, scroll_to, put_button
+from pywebio.output import put_text, put_html, put_markdown, put_table, put_file, scroll_to, put_button, use_scope, clear
 from pywebio.session import set_env
 import pymongo
 import os
@@ -53,96 +53,116 @@ def private_problems():
         scroll_to(position = "bottom")
 
 def lang():
-    data = [["Language", "Compilation", "Execution"]]
-    g = settings.find({"type":"lang"})
-    for x in g:
-        lg = [x['name']]
-        lg.append(x['compl'].format(x = 0, path="path") if len(x['compl']) > 0 else "not a compiled language")
-        lg.append(x['run'].format(x = 0, t = 0, path="path"))
-        data.append(lg)
-    put_markdown("## Exact compilation and execution commands for all languages")
-    put_table(data)
+    with use_scope("scope1"):
+        clear(scope = "scope1")
+        data = [["Language", "Compilation", "Execution"]]
+        g = settings.find({"type":"lang"})
+        for x in g:
+            lg = [x['name']]
+            lg.append(x['compl'].format(x = 0, path="path") if len(x['compl']) > 0 else "not a compiled language")
+            lg.append(x['run'].format(x = 0, t = 0, path="path"))
+            data.append(lg)
+        put_markdown("## Exact compilation and execution commands for all languages")
+        put_table(data)
 
 def info():
-    put_markdown(open("problem_setting.md", "r").read())
+    with use_scope("scope1"):
+        clear(scope = "scope1")
+        put_markdown(open("problem_setting.md", "r").read())
 
 def contest():
-    put_markdown("## Setting up a contest")
-    if not enterPassword():
-        return
+    with use_scope("scope1"):
+        clear(scope = "scope1")
 
-    name = input("Enter the contest name:")
+        put_markdown("## Setting up a contest")
+        if not enterPassword():
+            return
 
-    prev = settings.find_one({"type":"contest", "name":name})
-    if not prev is None:
-        put_text("An existing contest with the name \"" + name + "\" was found. If you would like to edit or delete this contest, please contact me.")
-        return
+        name = input("Enter the contest name:")
 
-    start = input("Enter the contest start time in the format YYYY MM DD HH MM SS (24-hour time):\n")
-    end = input("Enter the contest end time in the format YYYY MM DD HH MM SS (24-hour time):\n")
-    problems = int(input("Enter the number of problems in the contest:", type=FLOAT))
-    ll = int(input("How long should the participant window be (in seconds): ", type=FLOAT))
+        prev = settings.find_one({"type":"contest", "name":name})
+        if not prev is None:
+            put_text("An existing contest with the name \"" + name + "\" was found. If you would like to edit or delete this contest, please contact me.")
+            return
 
-    inst = textarea("Paste the contest instructions here (will be shown as a user starts a contest)")
-    with open("instructions.txt", "w") as f:
-        f.write(inst)
-        f.flush()
-        f.close()
-    
-    stc = storage.Client()
-    bucket = stc.get_bucket("discord-bot-oj-file-storage")
-    blob = bucket.blob("ContestInstructions/" + name + ".txt")
-    blob.upload_from_filename("instructions.txt")
+        start = input("Enter the contest start time in the format YYYY MM DD HH MM SS (24-hour time):\n")
+        end = input("Enter the contest end time in the format YYYY MM DD HH MM SS (24-hour time):\n")
+        problems = int(input("Enter the number of problems in the contest:", type=FLOAT))
+        ll = int(input("How long should the participant window be (in seconds): ", type=FLOAT))
 
-    settings.insert_one({"type":"contest", "name":name, "start":start, "end":end, "problems":problems, "len":ll})
+        inst = textarea("Paste the contest instructions here (will be shown as a user starts a contest)")
+        with open("instructions.txt", "w") as f:
+            f.write(inst)
+            f.flush()
+            f.close()
+        
+        stc = storage.Client()
+        bucket = stc.get_bucket("discord-bot-oj-file-storage")
+        blob = bucket.blob("ContestInstructions/" + name + ".txt")
+        blob.upload_from_filename("instructions.txt")
 
-    put_text("Successfully created contest `" + str(name) + "`! You may now close this page.")
+        settings.insert_one({"type":"contest", "name":name, "start":start, "end":end, "problems":problems, "len":ll})
+
+        put_text("Successfully created contest `" + str(name) + "`! You may now close this page.")
 
 def view_problems():
-    arr = sorted([(x['name'], x['points'], x['types'], x['authors']) for x in settings.find({"type":"problem", "published":True})], key = cmp_to_key(cmpProblem))
-    data = [
-        ['Problem Name', 'Points/Difficulty', 'Problem Types', 'Authors'],
-    ]
-    for x in arr:
-        data.append([x[0], x[1], ", ".join(x[2]), ", ".join(x[3])])
-    put_markdown("## All published problems on the judge:")
-    put_table(data)
+    with use_scope("scope1"):
+        clear(scope = "scope1")
+        arr = sorted([(x['name'], x['points'], x['types'], x['authors']) for x in settings.find({"type":"problem", "published":True})], key = cmp_to_key(cmpProblem))
+        data = [
+            ['Problem Name', 'Points/Difficulty', 'Problem Types', 'Authors'],
+        ]
+        for x in arr:
+            data.append([x[0], x[1], ", ".join(x[2]), ", ".join(x[3])])
+        put_markdown("## All published problems on the judge:")
+        put_table(data)
 
-    global clicked
-    clicked = False
+        global clicked
+        clicked = False
 
-    put_button("View private problems", onclick = private_problems, outline = True)
+        put_button("View private problems", onclick = private_problems, outline = True)
 
 def about():
-    put_markdown(open("about.md", "r").read())
+    with use_scope("scope1"):
+        clear(scope = "scope1")
+        put_markdown(open("about.md", "r").read())
 
 def view_problem():
-    name = input("Enter the problem to open:")
-    judge.problemInterface(settings, name, user['name'])
+    with use_scope("scope1"):
+        clear(scope = "scope1")
+        name = input("Enter the problem to open:")
+        judge.problemInterface(settings, name, user['name'])
 
 def login():
-    pswd = input("Please enter your account password to login")
-    global user
-    user = settings.find_one({"type":"account", "pswd":pswd.strip()})
-    if user is None:
-        put_text("Could not find an account associated with the given password")
-        return
-    put_markdown("**Logged in as `" + user['name'] + "`**")
+    with use_scope("scope1"):
+        clear(scope = "scope1")
+        pswd = input("Please enter your account password to login")
+        global user
+        user = settings.find_one({"type":"account", "pswd":pswd.strip()})
+        if user is None:
+            put_text("Could not find an account associated with the given password")
+            return
+        put_markdown("**Logged in as `" + user['name'] + "`**")
 
 def join():
-    put_markdown("Select the contest to join:")
-    op = [x['name'] for x in settings.find({"type":"contest"})]
-    name = select(options = op)
+    with use_scope("scope1"):
+        clear(scope = "scope1")
+        put_markdown("Select the contest to join:")
+        op = [x['name'] for x in settings.find({"type":"contest"})]
+        name = select(options = op)
 
-    if not judge.joinContest(settings, name, user['name']):
-        return
-    judge.instructions(name)
+        if not judge.joinContest(settings, name, user['name']):
+            return
+        judge.instructions(name)
 
 def rank():
-    put_markdown("Select the contest to join:")
-    op = [x['name'] for x in settings.find({"type":"contest"})]
-    contest = select(options = op)
-    put_markdown(judge.getScoreboard(settings, contest))
+    with use_scope("scope1"):
+        clear(scope = "scope1")
+        put_markdown("## View contest rankings:")
+        put_markdown("Select the contest to view:")
+        op = [x['name'] for x in settings.find({"type":"contest"})]
+        contest = select(options = op)
+        put_markdown(judge.getScoreboard(settings, contest))
 
 def rem():
     global user
