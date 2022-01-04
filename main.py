@@ -141,7 +141,7 @@ def view_problem():
             clear(scope = "scope1")
 
 def login():
-    with use_scope("scope1"):
+    with use_scope("scope2"):
         clear(scope = "scope1")
         pswd = input("Please enter your account password to login")
         global user
@@ -178,7 +178,7 @@ def rank():
         put_markdown(judge.getScoreboard(settings, contest))
 
 def rem():
-    with use_scope("scope2"):
+    with use_scope("scope1"):
         global user
         try:
             put_markdown("## Time remaining for joined contests:\n" + judge.remaining(settings, user['name']))
