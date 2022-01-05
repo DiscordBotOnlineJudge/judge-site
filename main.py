@@ -97,6 +97,7 @@ def contest():
 
         put_markdown("## Setting up a contest")
         if not enterPassword():
+            busy = False
             return
 
         name = input("Enter the contest name:")
@@ -218,16 +219,12 @@ def run_submit():
     global p
     problem = p
     busy = True
-    lang = input("Type a language to submit in:")
+    
+    op = [x['name'] for x in settings.find({"type":"lang"})]
+    lang = select(options = op)
 
-    if settings.find_one({"type":"lang", "name":lang}) is None:
-        with popup("Judging error"):
-            put_markdown("Error: Language not found")
-        scroll_to(position = "bottom")
-    else:
-        res = textarea('Paste your code into the editor below:', code=True)
-        judge.judgeSubmission(settings, user['name'], problem, lang, res)
-    time.sleep(3)
+    res = textarea('Paste your code into the editor below:', code=True)
+    judge.judgeSubmission(settings, user['name'], problem, lang, res)
 
     busy = False
 
