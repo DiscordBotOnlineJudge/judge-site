@@ -210,7 +210,6 @@ def judgeSubmission(settings, username, problem, lang, cleaned):
         avail = judges['num']
 
         settings.insert_one({"type":"use", "author":username, "message":cleaned})
-        scroll_to(position = "bottom")
 
         global setting
         setting = settings
@@ -235,7 +234,6 @@ def judgeSubmission(settings, username, problem, lang, cleaned):
                         try:
                             clear(scope = "submission1")
                             put_markdown("```diff\n" + msgContent + "\n```")
-                            scroll_to(scope = "submission1", position = "bottom")
                         except:
                             print("Edited empty message")
                     time.sleep(1)
@@ -246,7 +244,6 @@ def judgeSubmission(settings, username, problem, lang, cleaned):
             with use_scope('submission1'):
                 clear(scope = "submission1")
                 put_markdown("```diff\n" + output + "\n```")
-            scroll_to(scope = "submission1", position = "bottom")
 
         if len(problm['contest']) > 0 and finalscore >= 0:
             updateScore(settings, problm['contest'], problem, username, finalscore, ct)
