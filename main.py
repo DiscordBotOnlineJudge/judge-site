@@ -226,7 +226,7 @@ def run_submit():
         scroll_to(position = "bottom")
     else:
         res = textarea('Paste your code into the editor below:', code=True)
-        judge.judgeSubmission(settings, user, problem, lang, res)
+        judge.judgeSubmission(settings, user['name'], problem, lang, res)
     time.sleep(3)
 
     busy = False

@@ -219,7 +219,6 @@ def judgeSubmission(settings, username, problem, lang, cleaned):
 
         manager = Manager()
         return_dict = manager.dict()
-        print(judges, username, cleaned, lang, problm, False, return_dict)
         rpc = Process(target = runSubmission, args = (judges, username, cleaned, lang, problm, False, return_dict,))
         rpc.start()
 
