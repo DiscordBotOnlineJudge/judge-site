@@ -225,17 +225,14 @@ def login():
     set("busy", True)
     with use_scope("scope2"):
         clear(scope = "scope1")
-        done = False
-        while not done:
-            pswd = input("Please enter your account password to login")
-            user = settings.find_one({"type":"account", "pswd":pswd.strip()})
-            if user is None:
-                toast("Could not find an account associated with the given password", color = "error")
-            else:
-                set("username", user['name'])
-                clear(scope = "scope2")
-                put_markdown("**Logged in as `" + get("username") + "`**")
-                done = True  
+        pswd = input("Please enter your account password to login")
+        user = settings.find_one({"type":"account", "pswd":pswd.strip()})
+        if user is None:
+            toast("Could not find an account associated with the given password. Click \"Log In\" to try again.", color = "error")
+        else:
+            set("username", user['name'])
+            clear(scope = "scope2")
+            put_markdown("**Logged in as `" + get("username") + "`**")
     set("busy", False)
 
 def join():
