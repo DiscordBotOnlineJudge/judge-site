@@ -33,7 +33,6 @@ def enterPassword():
         return False
 
 def private_problems():
-    global busy
     if isBusy():
         toast("Please complete the current operation before starting another")
         return
@@ -56,7 +55,6 @@ def private_problems():
     set("busy", False)
 
 def lang():
-    global busy
     if isBusy():
         toast("Please complete the current operation before starting another")
         return
@@ -73,7 +71,6 @@ def lang():
         put_table(data)
 
 def info():
-    global busy
     if isBusy():
         toast("Please complete the current operation before starting another")
         return
@@ -82,7 +79,6 @@ def info():
         put_markdown(open("problem_setting.md", "r").read())
 
 def contest():
-    global busy
     if isBusy():
         toast("Please complete the current operation before starting another")
         return
@@ -124,7 +120,6 @@ def contest():
     set("busy", False)
 
 def view_problems():
-    global busy
     if isBusy():
         toast("Please complete the current operation before starting another")
         return
@@ -139,13 +134,9 @@ def view_problems():
         put_markdown("## All published problems on the judge:")
         put_table(data)
 
-        global clicked
-        clicked = False
-
         put_button("View private problems", onclick = private_problems, outline = True)
 
 def about():
-    global busy
     if isBusy():
         toast("Please complete the current operation before starting another")
         return
@@ -154,16 +145,12 @@ def about():
         put_markdown(open("about.md", "r").read())
 
 def view_problem():
-    global busy
     if isBusy():
         toast("Please complete the current operation before starting another")
         return
 
-    global user
-    try:
-        if "name" in user: # Test logged in
-            pass
-    except:
+    
+    if len(get("username")) == 0: # Test logged in
         toast("Please login to use this command", color = "error")
         set("busy", False)
         clear(scope = "scope1")
@@ -173,7 +160,7 @@ def view_problem():
     with use_scope("scope1"):
         clear(scope = "scope1")
         name = input("Enter the problem to open:")
-        problemInterface(settings, name, user['name'])
+        problemInterface(settings, name, get("username"))
         
     set("busy", False)
 
@@ -216,7 +203,7 @@ def run_submit():
     lang = select(options = op, label = "Select a language to submit in:")
 
     res = textarea('Paste your code into the editor below:', code=True)
-    judge.judgeSubmission(settings, user['name'], problem, lang, res)
+    judge.judgeSubmission(settings, get("username"), problem, lang, res)
 
     set("busy", False)
 
@@ -226,12 +213,12 @@ def login():
         done = False
         while not done:
             pswd = input("Please enter your account password to login")
-            global user
             user = settings.find_one({"type":"account", "pswd":pswd.strip()})
             if user is None:
                 toast("Could not find an account associated with the given password", color = "error")
             else:
-                put_markdown("**Logged in as `" + user['name'] + "`**")
+                set("username", user['name'])
+                put_markdown("**Logged in as `" + get("username") + "`**")
                 done = True  
 
 def join():
@@ -239,10 +226,7 @@ def join():
         toast("Please complete the current operation before starting another")
         return
 
-    try:
-        if "name" in user: # Test logged in
-            pass
-    except:
+    if len(get("username")) == 0: # Test logged in
         toast("Please login to use this command", color = "error")
         set("busy", False)
         clear(scope = "scope1")
@@ -257,7 +241,7 @@ def join():
         name = select(options = op, label = "Select a contest to join:")
 
         try:
-            if not judge.joinContest(settings, name, user['name']):
+            if not judge.joinContest(settings, name, get("username")):
                 set("busy", False)
                 return
             judge.instructions(name)
@@ -289,24 +273,20 @@ def rem():
         return
     with use_scope("scope1"):
         clear(scope = "scope1")
-        global user
-        try:
-            put_markdown("## Time remaining for joined contests:\n" + judge.remaining(settings, user['name']))
-        except:
+        if len(get("username")) > 0:
+            put_markdown("## Time remaining for joined contests:\n" + judge.remaining(settings, get("username")))
+        else:
             toast("Please login to use this command", color = "error")
             clear(scope = "scope1")
 
-def getSession():
+def getSession() -> int:
     return int(os.environ['session'])
 
 def isBusy():
     return settings.find_one({"type":"session", "idx":getSession()})['busy']
 
-def username():
-    return settings.find_one({"type":"session", "idx":getSession()})['user']
-
 def set(key, val):
-    settings.update_one({"type":"session", "idx":getSession()}, {"$set", {key:val}})
+    settings.update_one({"type":"session", "idx":getSession()}, {"$set":{key:val}})
 
 def get(key):
     return settings.find_one({"type":"session", "idx":getSession()})[key]
@@ -320,7 +300,9 @@ def register():
         if not "session" in os.environ:
             os.environ['session'] = '1'
         os.environ['session'] = str(int(os.environ['session']) + 1)
-        settings.insert_one({"type":"session", "idx":getSession(), "busy":False, "user":""})
+        settings.insert_one({"type":"session", "idx":getSession(), "busy":False, "username":""})
+
+        print("Starting session", getSession())
 
         put_button("Problem/Contest setting documentation", onclick = info, outline = True)
         put_button("Language Info", onclick = lang, outline = True)
