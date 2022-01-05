@@ -29,7 +29,7 @@ def enterPassword():
         getUserPswd = input("Please enter the administrator password:")
         if getUserPswd == settings.find_one({"type":"password"})['password']:
             return True
-        put_markdown("Sorry, the password you entered was incorrect. Please reload the page to try again.")
+        toast("The password you entered was incorrect. Please try again.", color = "error")
         return False
 
 def private_problems():
