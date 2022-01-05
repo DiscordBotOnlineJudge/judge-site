@@ -174,6 +174,7 @@ def view_problem():
                 pass
         except:
             toast("Please login to use this command", color = "error")
+            busy = False
             clear(scope = "scope1")
             return
 
@@ -261,6 +262,7 @@ def join():
             judge.instructions(name)
         except:
             toast("Please login to use this command", color = "error")
+            busy = False
             clear(scope = "scope1")
     busy = False
 
