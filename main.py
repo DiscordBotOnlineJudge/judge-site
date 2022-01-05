@@ -227,13 +227,16 @@ def run_submit():
 def login():
     with use_scope("scope2"):
         clear(scope = "scope1")
-        pswd = input("Please enter your account password to login")
-        global user
-        user = settings.find_one({"type":"account", "pswd":pswd.strip()})
-        if user is None:
-            put_text("Could not find an account associated with the given password")
-            return
-        put_markdown("**Logged in as `" + user['name'] + "`**")
+        done = False
+        while not done:
+            pswd = input("Please enter your account password to login")
+            global user
+            user = settings.find_one({"type":"account", "pswd":pswd.strip()})
+            if user is None:
+                toast("Could not find an account associated with the given password", color = "error")
+            else:
+                done = True
+            put_markdown("**Logged in as `" + user['name'] + "`**")
 
 def join():
     global busy
@@ -321,6 +324,7 @@ def register():
         put_button("Open/submit to a problem", onclick = view_problem, outline = True)
         put_button("Join a contest", onclick = join, outline = True)
         put_button("See remaining time on contest window", onclick = rem, outline = True)
+
 
         login()
 
