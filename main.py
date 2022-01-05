@@ -216,6 +216,7 @@ def run_submit():
 def login():
     with use_scope("scope2"):
         clear(scope = "scope1")
+        put_markdown("**Not logged in**")
         done = False
         while not done:
             pswd = input("Please enter your account password to login")
@@ -224,6 +225,7 @@ def login():
                 toast("Could not find an account associated with the given password", color = "error")
             else:
                 set("username", user['name'])
+                clear(scope = "scope2")
                 put_markdown("**Logged in as `" + get("username") + "`**")
                 done = True  
 
