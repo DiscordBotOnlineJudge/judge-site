@@ -39,20 +39,21 @@ def private_problems():
         return
     busy = True
 
-    pswd = input("To view private problems, type in the administrator password:")
-    if pswd == settings.find_one({"type":"password"})['password']:
-        arr = sorted([(x['name'], x['points'], x['contest'], x['types'], x['authors']) for x in settings.find({"type":"problem", "published":False})], key = cmp_to_key(cmpProblem))
-        data = [
-            ['Problem Name', 'Points/Difficulty', 'Contest', 'Problem Types', 'Authors'],
-        ]
-        for x in arr:
-            data.append([x[0], x[1], x[2], ", ".join(x[3]), ", ".join(x[4])])
-        put_markdown("## All private problems:")
-        put_table(data)
-        scroll_to(position = "bottom")
-    else:
-        put_markdown("Sorry, the password you entered was incorrect.")
-        scroll_to(position = "bottom")
+    with use_scope("scope1"):
+        pswd = input("To view private problems, type in the administrator password:")
+        if pswd == settings.find_one({"type":"password"})['password']:
+            arr = sorted([(x['name'], x['points'], x['contest'], x['types'], x['authors']) for x in settings.find({"type":"problem", "published":False})], key = cmp_to_key(cmpProblem))
+            data = [
+                ['Problem Name', 'Points/Difficulty', 'Contest', 'Problem Types', 'Authors'],
+            ]
+            for x in arr:
+                data.append([x[0], x[1], x[2], ", ".join(x[3]), ", ".join(x[4])])
+            put_markdown("## All private problems:")
+            put_table(data)
+            scroll_to(position = "bottom")
+        else:
+            put_markdown("Sorry, the password you entered was incorrect.")
+            scroll_to(position = "bottom")
     busy = False
 
 def lang():
