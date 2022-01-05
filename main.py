@@ -350,6 +350,10 @@ def register():
         put_button("Join a contest", onclick = join, outline = True)
         put_button("See remaining time on contest window", onclick = rem, outline = True)
 
+        with use_scope("scope2"):
+            clear(scope = "scope1")
+            put_markdown("**Not logged in**")
+
     except Exception as e:
         toast("An error occurred. Please make sure your input is valid. Please reload to try again or contact me.", color = "error")
         exc_type, exc_obj, exc_tb = sys.exc_info()
