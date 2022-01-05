@@ -1,7 +1,7 @@
 import pywebio
 from pywebio.input import input, FLOAT, file_upload, textarea, select
 from pywebio.output import put_text, put_html, put_markdown, put_table, put_file, scroll_to, put_button, use_scope, clear, toast, popup
-from pywebio.session import set_env
+from pywebio.session import set_env, info
 import pymongo
 import os
 import dns
@@ -72,7 +72,7 @@ def lang():
         put_markdown("## Exact compilation and execution commands for all languages")
         put_table(data)
 
-def info():
+def documentation():
     if isBusy():
         toast("Please complete the current operation before starting another")
         return
@@ -232,6 +232,10 @@ def login():
             toast("Could not find an account associated with the given password. Click \"Log In\" to try again.", color = "error")
         else:
             set("username", user['name'])
+            if settings.find_one({"type":"register", "ip":info.user_ip}) is None:
+                settings.insert_one({"type":"register", "ip":info.user_ip, "user":get("username")})
+            else:
+                settings.update_one({"type":"register", "ip":info.user_ip}, {"$set":{"user":get("username")}})
             clear(scope = "scope2")
             put_markdown("**Logged in as `" + get("username") + "`**")
     set("busy", False)
@@ -320,7 +324,6 @@ def account():
 
 def register():
     set_env(title = "Discord Bot Online Judge")
-
     try:
         put_markdown("# Welcome to the Discord Bot Online Judge web interface!")
 
@@ -329,9 +332,13 @@ def register():
         os.environ['session'] = str(int(os.environ['session']) + 1)
         settings.insert_one({"type":"session", "idx":getSession(), "busy":False, "pp":False, "submit":False, "username":""})
 
+        reg = settings.find_one({"type":"register", "ip":info.user_ip})
+        if not reg is None:
+            set("username", reg['user'])
+
         print("Starting session", getSession())
 
-        put_button("Problem/Contest setting documentation", onclick = info, outline = True)
+        put_button("Problem/Contest setting documentation", onclick = documentation, outline = True)
         put_button("Language Info", onclick = lang, outline = True)
         put_button("View contest rankings", onclick = rank, outline = True)
         put_button("Set up a new contest", onclick = contest, outline = True)
@@ -347,7 +354,11 @@ def register():
 
         with use_scope("scope2"):
             clear(scope = "scope1")
-            put_markdown("**Not logged in**")
+            username = get("username")
+            if len(username) == 0:
+                put_markdown("**Not logged in**")
+            else:
+                put_markdown("**Logged in as `" + username + "`**")
 
     except Exception as e:
         toast("An error occurred. Please make sure your input is valid. Please reload to try again or contact me.", color = "error")
