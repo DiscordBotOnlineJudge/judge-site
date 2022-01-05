@@ -52,8 +52,7 @@ def private_problems():
             put_table(data)
             scroll_to(position = "bottom")
         else:
-            put_markdown("Sorry, the password you entered was incorrect.")
-            scroll_to(position = "bottom")
+            toast("Sorry, the password you entered was incorrect", color = "error")
     busy = False
 
 def lang():
