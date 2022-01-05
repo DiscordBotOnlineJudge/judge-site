@@ -219,6 +219,12 @@ def run_submit():
     set("submit", False)
 
 def login():
+    if isBusy():
+        toast("Please complete the current operation before starting another")
+        return
+    if len(get("username")) > 0:
+        toast("Already logged in. Reload the page to sign into another account.")
+    set("busy", True)
     with use_scope("scope2"):
         clear(scope = "scope1")
         put_markdown("**Not logged in**")
@@ -233,6 +239,7 @@ def login():
                 clear(scope = "scope2")
                 put_markdown("**Logged in as `" + get("username") + "`**")
                 done = True  
+    set("busy", False)
 
 def join():
     if isBusy():
@@ -338,11 +345,10 @@ def register():
 
         put_markdown("### Web online judge")
         put_button("Creating an account", onclick = account, outline = True)
+        put_button("Log In", onclick = login, outline = True)
         put_button("Open/submit to a problem", onclick = view_problem, outline = True)
         put_button("Join a contest", onclick = join, outline = True)
         put_button("See remaining time on contest window", onclick = rem, outline = True)
-
-        login()
 
     except Exception as e:
         toast("An error occurred. Please make sure your input is valid. Please reload to try again or contact me.", color = "error")
