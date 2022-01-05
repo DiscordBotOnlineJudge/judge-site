@@ -285,6 +285,7 @@ def rem():
         toast("Please complete the current operation before starting another")
         return
     with use_scope("scope1"):
+        clear(scope = "scope1")
         global user
         try:
             put_markdown("## Time remaining for joined contests:\n" + judge.remaining(settings, user['name']))
