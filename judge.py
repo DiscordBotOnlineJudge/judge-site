@@ -240,7 +240,7 @@ def judgeSubmission(settings, username, problem, lang, cleaned):
 
             finalscore = return_dict['finalscore']
 
-            output = settings.find_one({"_id":judges['_id']})['output'].replace("diff", "").replace("`", "")
+            output = settings.find_one({"_id":judges['_id']})['output'].replace("diff", "").replace("`", "").replace("+", "").replace("-", "")
             with use_scope('submission1'):
                 clear(scope = "submission1")
                 put_markdown("```diff\n" + output + "\n```")
