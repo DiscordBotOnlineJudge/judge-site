@@ -8,6 +8,7 @@ import dns
 import time
 import judge
 import sys
+import functools
 from google.cloud import storage
 from functools import cmp_to_key
 from pymongo import MongoClient
@@ -32,11 +33,11 @@ def enterPassword():
         toast("The password you entered was incorrect. Please try again.", color = "error")
         return False
 
-def private_problems():
-    if get("pp"):
+def private_problems(session):
+    if get(session, "pp"):
         return
-    set("busy", True)
-    set("pp", True)
+    set(session, "busy", True)
+    set(session, "pp", True)
 
     with use_scope("scope1"):
         pswd = input("To view private problems, type in the administrator password:")
@@ -52,11 +53,11 @@ def private_problems():
             scroll_to(position = "bottom")
         else:
             toast("Sorry, the password you entered was incorrect", color = "error")
-    set("busy", False)
-    set("pp", False)
+    set(session, "busy", False)
+    set(session, "pp", False)
 
-def lang():
-    if isBusy():
+def lang(session):
+    if isBusy(session):
         toast("Please complete the current operation before starting another")
         return
     set_env(title = "DBOJ language info")
@@ -72,8 +73,8 @@ def lang():
         put_markdown("## Exact compilation and execution commands for all languages")
         put_table(data)
 
-def info():
-    if isBusy():
+def info(session):
+    if isBusy(session):
         toast("Please complete the current operation before starting another")
         return
     set_env(title = "DBOJ Documentation")
@@ -81,18 +82,18 @@ def info():
         clear(scope = "scope1")
         put_markdown(open("problem_setting.md", "r").read())
 
-def contest():
-    if isBusy():
+def contest(session):
+    if isBusy(session):
         toast("Please complete the current operation before starting another")
         return
-    set("busy", True)
+    set(session, "busy", True)
     set_env(title = "Setting up new contest")
     with use_scope("scope1"):
         clear(scope = "scope1")
 
         put_markdown("## Setting up a contest")
         if not enterPassword():
-            set("busy", False)
+            set(session, "busy", False)
             return
 
         name = input("Enter the contest name:")
@@ -121,10 +122,10 @@ def contest():
         settings.insert_one({"type":"contest", "name":name, "start":start, "end":end, "problems":problems, "len":ll})
 
         put_text("Successfully created contest `" + str(name) + "`! You may now close this page.")
-    set("busy", False)
+    set(session, "busy", False)
 
-def view_problems():
-    if isBusy():
+def view_problems(session):
+    if isBusy(session):
         toast("Please complete the current operation before starting another")
         return
     set_env(title = "View all problems")
@@ -141,8 +142,8 @@ def view_problems():
 
         put_button("View private problems", onclick = private_problems, outline = True)
 
-def about():
-    if isBusy():
+def about(session):
+    if isBusy(session):
         toast("Please complete the current operation before starting another")
         return
     set_env(title = "About DBOJ")
@@ -150,27 +151,27 @@ def about():
         clear(scope = "scope1")
         put_markdown(open("about.md", "r").read())
 
-def view_problem():
-    if isBusy():
+def view_problem(session):
+    if isBusy(session):
         toast("Please complete the current operation before starting another")
         return
     
-    if len(get("username")) == 0: # Test logged in
+    if len(get(session, "username")) == 0: # Test logged in
         toast("Please login to use this command", color = "error")
-        set("busy", False)
+        set(session, "busy", False)
         clear(scope = "scope1")
         return
     set_env(title = "View problem")
-    set("busy", True)
+    set(session, "busy", True)
     with use_scope("scope1"):
         clear(scope = "scope1")
         name = input("Enter the problem to open:")
         set_env(title = ("View problem " + name))
-        problemInterface(settings, name, get("username"))
+        problemInterface(session, settings, name, get(session, "username"))
         
-    set("busy", False)
+    set(session, "busy", False)
 
-def problemInterface(settings, problem, user):
+def problemInterface(session, settings, problem, user):
     try:
         sc = storage.Client()
         bucket = sc.get_bucket("discord-bot-oj-file-storage")
@@ -191,8 +192,8 @@ def problemInterface(settings, problem, user):
         except:
             put_markdown("Sorry, this problem does not yet have a problem statement.")
 
-        set("problem", problem)
-        put_button("Submit solution", onclick = run_submit, outline = True)
+        set(session, "problem", problem)
+        put_button("Submit solution", onclick = functools.partial(run_submit, session), outline = True)
 
     except Exception as e:
         toast("An error occurred. Please make sure your input is valid. Please reload to try again or contact me.", color = "error")
@@ -201,28 +202,28 @@ def problemInterface(settings, problem, user):
         print(exc_type, fname, exc_tb.tb_lineno)
         print(e)
 
-def run_submit():
-    if get("submit"):
+def run_submit(session):
+    if get(session, "submit"):
         return
-    set("submit", True)
+    set(session, "submit", True)
 
-    problem = get("problem")
-    set("busy", True)
+    problem = get(session, "problem")
+    set(session, "busy", True)
     
     op = [x['name'] for x in settings.find({"type":"lang"})]
     lang = select(options = op, label = "Select a language to submit in:")
 
     res = textarea('Paste your code into the editor below:', code=True)
-    judge.judgeSubmission(settings, get("username"), problem, lang, res)
+    judge.judgeSubmission(settings, get(session, "username"), problem, lang, res)
 
-    set("busy", False)
-    set("submit", False)
+    set(session, "busy", False)
+    set(session, "submit", False)
 
-def login():
-    if isBusy():
+def login(session):
+    if isBusy(session):
         toast("Please complete the current operation before starting another")
         return
-    set("busy", True)
+    set(session, "busy", True)
     set_env(title = "Log In")
     with use_scope("scope2"):
         clear(scope = "scope1")
@@ -231,23 +232,23 @@ def login():
         if user is None:
             toast("Could not find an account associated with the given password. Click \"Log In\" to try again.", color = "error")
         else:
-            set("username", user['name'])
+            set(session, "username", user['name'])
             clear(scope = "scope2")
-            put_markdown("**Logged in as `" + get("username") + "`**")
-    set("busy", False)
+            put_markdown("**Logged in as `" + get(session, "username") + "`**")
+    set(session, "busy", False)
 
-def join():
-    if isBusy():
+def join(session):
+    if isBusy(session):
         toast("Please complete the current operation before starting another")
         return
 
-    if len(get("username")) == 0: # Test logged in
+    if len(get(session, "username")) == 0: # Test logged in
         toast("Please login to use this command", color = "error")
-        set("busy", False)
+        set(session, "busy", False)
         clear(scope = "scope1")
         return
     set_env(title = "Joining a contest")
-    set("busy", True)
+    set(session, "busy", True)
     with use_scope("scope1"):
         clear(scope = "scope1")
 
@@ -256,22 +257,22 @@ def join():
         name = select(options = op, label = "Select a contest to join:")
 
         try:
-            if not judge.joinContest(settings, name, get("username")):
-                set("busy", False)
+            if not judge.joinContest(settings, name, get(session, "username")):
+                set(session, "busy", False)
                 return
             judge.instructions(name)
         except:
             toast("Please login to use this command", color = "error")
-            set("busy", False)
+            set(session, "busy", False)
             clear(scope = "scope1")
-    set("busy", False)
+    set(session, "busy", False)
 
-def rank():
-    if isBusy():
+def rank(session):
+    if isBusy(session):
         toast("Please complete the current operation before starting another")
         return
     set_env(title = "Contest rankings")
-    set("busy", True)
+    set(session, "busy", True)
     try:
         with use_scope("scope1"):
             clear(scope = "scope1")
@@ -282,17 +283,17 @@ def rank():
             put_markdown(judge.getScoreboard(settings, contest))
     except:
         toast("Internal error with reading scoreboard (might be an archived contest)", color = "error")
-    set("busy", False)
+    set(session, "busy", False)
 
-def rem():
-    if isBusy():
+def rem(session):
+    if isBusy(session):
         toast("Please complete the current operation before starting another")
         return
     set_env(title = "Remaining contest window time")
     with use_scope("scope1"):
         clear(scope = "scope1")
-        if len(get("username")) > 0:
-            put_markdown("## Time remaining for joined contests:\n" + judge.remaining(settings, get("username")))
+        if len(get(session, "username")) > 0:
+            put_markdown("## Time remaining for joined contests:\n" + judge.remaining(settings, get(session, "username")))
         else:
             toast("Please login to use this command", color = "error")
             clear(scope = "scope1")
@@ -300,17 +301,17 @@ def rem():
 def getSession() -> int:
     return int(os.environ['session'])
 
-def isBusy():
-    return settings.find_one({"type":"session", "idx":getSession()})['busy']
+def isBusy(session):
+    return settings.find_one({"type":"session", "idx":session})['busy']
 
-def set(key, val):
-    settings.update_one({"type":"session", "idx":getSession()}, {"$set":{key:val}})
+def set(session, key, val):
+    settings.update_one({"type":"session", "idx":session}, {"$set":{key:val}})
 
-def get(key):
-    return settings.find_one({"type":"session", "idx":getSession()})[key]
+def get(session, key):
+    return settings.find_one({"type":"session", "idx":session})[key]
 
-def account():
-    if isBusy():
+def account(session):
+    if isBusy(session):
         toast("Please complete the current operation before starting another")
         return
     set_env(title = "Creating an account")
@@ -328,22 +329,23 @@ def register():
             os.environ['session'] = '1'
         os.environ['session'] = str(int(os.environ['session']) + 1)
         settings.insert_one({"type":"session", "idx":getSession(), "busy":False, "pp":False, "submit":False, "username":""})
+        session = getSession()
 
         print("Starting session", getSession())
 
-        put_button("Problem/Contest setting documentation", onclick = info, outline = True)
-        put_button("Language Info", onclick = lang, outline = True)
-        put_button("View contest rankings", onclick = rank, outline = True)
-        put_button("Set up a new contest", onclick = contest, outline = True)
-        put_button("View all problems", onclick = view_problems, outline = True)
-        put_button("About page", onclick = about, outline = True)
+        put_button("Problem/Contest setting documentation", onclick = functools.partial(info, session), outline = True)
+        put_button("Language Info", onclick = functools.partial(lang, session), outline = True)
+        put_button("View contest rankings", onclick = functools.partial(rank, session), outline = True)
+        put_button("Set up a new contest", onclick = functools.partial(contest, session), outline = True)
+        put_button("View all problems", onclick = functools.partial(view_problem, session), outline = True)
+        put_button("About page", onclick = functools.partial(about, session), outline = True)
 
         put_markdown("### Web online judge")
-        put_button("Creating an account", onclick = account, outline = True)
-        put_button("Log In", onclick = login, outline = True)
-        put_button("Open/submit to a problem", onclick = view_problem, outline = True)
-        put_button("Join a contest", onclick = join, outline = True)
-        put_button("See remaining time on contest window", onclick = rem, outline = True)
+        put_button("Creating an account", onclick = functools.partial(account, session), outline = True)
+        put_button("Log In", onclick = functools.partial(login, session), outline = True)
+        put_button("Open/submit to a problem", onclick = functools.partial(view_problem, session), outline = True)
+        put_button("Join a contest", onclick = functools.partial(join, session), outline = True)
+        put_button("See remaining time on contest window", onclick = functools.partial(rem, session), outline = True)
 
         with use_scope("scope2"):
             clear(scope = "scope1")
