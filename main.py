@@ -59,6 +59,7 @@ def lang():
     if isBusy():
         toast("Please complete the current operation before starting another")
         return
+    set_env(title = "DBOJ language info")
     with use_scope("scope1"):
         clear(scope = "scope1")
         data = [["Language", "Compilation", "Execution"]]
@@ -75,6 +76,7 @@ def info():
     if isBusy():
         toast("Please complete the current operation before starting another")
         return
+    set_env(title = "DBOJ Documentation")
     with use_scope("scope1"):
         clear(scope = "scope1")
         put_markdown(open("problem_setting.md", "r").read())
@@ -84,6 +86,7 @@ def contest():
         toast("Please complete the current operation before starting another")
         return
     set("busy", True)
+    set_env(title = "Setting up new contest")
     with use_scope("scope1"):
         clear(scope = "scope1")
 
@@ -124,6 +127,7 @@ def view_problems():
     if isBusy():
         toast("Please complete the current operation before starting another")
         return
+    set_env(title = "View all problems")
     with use_scope("scope1"):
         clear(scope = "scope1")
         arr = sorted([(x['name'], x['points'], x['types'], x['authors']) for x in settings.find({"type":"problem", "published":True})], key = cmp_to_key(cmpProblem))
@@ -141,6 +145,7 @@ def about():
     if isBusy():
         toast("Please complete the current operation before starting another")
         return
+    set_env(title = "About DBOJ")
     with use_scope("scope1"):
         clear(scope = "scope1")
         put_markdown(open("about.md", "r").read())
@@ -149,18 +154,18 @@ def view_problem():
     if isBusy():
         toast("Please complete the current operation before starting another")
         return
-
     
     if len(get("username")) == 0: # Test logged in
         toast("Please login to use this command", color = "error")
         set("busy", False)
         clear(scope = "scope1")
         return
-
+    set_env(title = "View problem")
     set("busy", True)
     with use_scope("scope1"):
         clear(scope = "scope1")
         name = input("Enter the problem to open:")
+        set_env(title = ("View problem " + name))
         problemInterface(settings, name, get("username"))
         
     set("busy", False)
@@ -239,7 +244,7 @@ def join():
         set("busy", False)
         clear(scope = "scope1")
         return
-
+    set_env(title = "Joining a contest")
     set("busy", True)
     with use_scope("scope1"):
         clear(scope = "scope1")
@@ -263,6 +268,7 @@ def rank():
     if isBusy():
         toast("Please complete the current operation before starting another")
         return
+    set_env(title = "Contest rankings")
     set("busy", True)
     try:
         with use_scope("scope1"):
@@ -270,15 +276,17 @@ def rank():
             put_markdown("## View contest rankings:")
             op = [x['name'] for x in settings.find({"type":"contest"})]
             contest = select(options = op, label = "Select a contest to view:")
+            set_env(title = ("Contest rankings for " + contest))
             put_markdown(judge.getScoreboard(settings, contest))
     except:
-        print("Error reading scoreboard")
+        toast("Internal error with reading scoreboard (might be an archived contest)", color = "error")
     set("busy", False)
 
 def rem():
     if isBusy():
         toast("Please complete the current operation before starting another")
         return
+    set_env(title = "Remaining contest window time")
     with use_scope("scope1"):
         clear(scope = "scope1")
         if len(get("username")) > 0:
@@ -303,6 +311,7 @@ def account():
     if isBusy():
         toast("Please complete the current operation before starting another")
         return
+    set_env(title = "Creating an account")
     with use_scope("scope1"):
         clear(scope = "scope1")
         put_markdown(open("web_oj_documentation.md", "r").read())
@@ -329,6 +338,7 @@ def register():
 
         put_markdown("### Web online judge")
         put_button("Creating an account", onclick = account, outline = True)
+        put_button("Log In", onclick = login, outline = True)
         put_button("Open/submit to a problem", onclick = view_problem, outline = True)
         put_button("Join a contest", onclick = join, outline = True)
         put_button("See remaining time on contest window", onclick = rem, outline = True)
