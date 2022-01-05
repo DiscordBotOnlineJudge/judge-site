@@ -299,6 +299,14 @@ def set(key, val):
 def get(key):
     return settings.find_one({"type":"session", "idx":getSession()})[key]
 
+def account():
+    if isBusy():
+        toast("Please complete the current operation before starting another")
+        return
+    with use_scope("scope1"):
+        clear(scope = "scope1")
+        put_markdown(open("web_oj_documentation.md", "r").read())
+
 def register():
     set_env(title = "Discord Bot Online Judge")
 
@@ -320,6 +328,7 @@ def register():
         put_button("About page", onclick = about, outline = True)
 
         put_markdown("### Web online judge")
+        put_button("Creating an account", onclick = account, outline = True)
         put_button("Open/submit to a problem", onclick = view_problem, outline = True)
         put_button("Join a contest", onclick = join, outline = True)
         put_button("See remaining time on contest window", onclick = rem, outline = True)
