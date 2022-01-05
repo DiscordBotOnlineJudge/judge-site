@@ -185,10 +185,10 @@ def problemInterface(settings, problem, user):
 
         found = settings.find_one({"type":"problem", "name":problem})
         if found is None:
-            put_text("Error: Problem not found")
+            toast("Error: Problem not found", color = "error")
             return
         if judge.perms(settings, found, user):
-            put_text("Error: problem not found")
+            toast("Error: Problem not found", color = "error")
             return
         
         try:
@@ -203,7 +203,7 @@ def problemInterface(settings, problem, user):
         put_button("Submit solution", onclick = run_submit, outline = True)
 
     except Exception as e:
-        put_text("An error occurred. Please make sure your input is valid. Please reload to try again or contact me.")
+        toast("An error occurred. Please make sure your input is valid. Please reload to try again or contact me.", color = "error")
         exc_type, exc_obj, exc_tb = sys.exc_info()
         fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
         print(exc_type, fname, exc_tb.tb_lineno)
@@ -328,7 +328,7 @@ def register():
         login()
 
     except Exception as e:
-        put_text("An error occurred. Please make sure your input is valid. Please reload to try again or contact me.")
+        toast("An error occurred. Please make sure your input is valid. Please reload to try again or contact me.", color = "error")
         exc_type, exc_obj, exc_tb = sys.exc_info()
         fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
         print(exc_type, fname, exc_tb.tb_lineno)

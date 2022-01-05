@@ -1,5 +1,5 @@
 from pywebio.input import input, FLOAT, file_upload, textarea
-from pywebio.output import put_text, put_html, put_markdown, put_table, put_file, scroll_to, use_scope, clear, popup
+from pywebio.output import put_text, put_html, put_markdown, put_table, put_file, scroll_to, use_scope, clear, popup, toast
 from google.cloud import storage
 import contests
 import sys
@@ -250,7 +250,7 @@ def judgeSubmission(settings, username, problem, lang, cleaned):
         
         settings.update_one({"_id":judges['_id']}, {"$set":{"output":""}})
     except Exception as e:
-        put_markdown("Judging error: Fatal error occured while grading solution\n```" + str(e) + "\n```")
+        toast("Judging error: Fatal error occured while grading solution", color = "error")
         exc_type, exc_obj, exc_tb = sys.exc_info()
         fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
         print(exc_type, fname, exc_tb.tb_lineno)
