@@ -33,10 +33,10 @@ def enterPassword():
         return False
 
 def private_problems():
-    if isBusy():
-        toast("Please complete the current operation before starting another")
+    if get("pp"):
         return
     set("busy", True)
+    set("pp", True)
 
     with use_scope("scope1"):
         pswd = input("To view private problems, type in the administrator password:")
@@ -53,6 +53,7 @@ def private_problems():
         else:
             toast("Sorry, the password you entered was incorrect", color = "error")
     set("busy", False)
+    set("pp", False)
 
 def lang():
     if isBusy():
@@ -196,6 +197,10 @@ def problemInterface(settings, problem, user):
         print(e)
 
 def run_submit():
+    if get("submit"):
+        return
+    set("submit", True)
+
     problem = get("problem")
     set("busy", True)
     
@@ -206,6 +211,7 @@ def run_submit():
     judge.judgeSubmission(settings, get("username"), problem, lang, res)
 
     set("busy", False)
+    set("submit", False)
 
 def login():
     with use_scope("scope2"):
@@ -296,13 +302,11 @@ def register():
 
     try:
         put_markdown("# Welcome to the Discord Bot Online Judge web interface!")
-        
-        settings.delete_many({"type":"session"})
 
         if not "session" in os.environ:
             os.environ['session'] = '1'
         os.environ['session'] = str(int(os.environ['session']) + 1)
-        settings.insert_one({"type":"session", "idx":getSession(), "busy":False, "username":""})
+        settings.insert_one({"type":"session", "idx":getSession(), "busy":False, "pp":False, "submit":False, "username":""})
 
         print("Starting session", getSession())
 
@@ -329,4 +333,5 @@ def register():
 
 if __name__ == '__main__':
     os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = 'google-service-key.json'
+    settings.delete_many({"type":"session"})
     pywebio.start_server(register, port=int(os.getenv("PORT")))
