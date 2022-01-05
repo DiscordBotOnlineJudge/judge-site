@@ -222,12 +222,9 @@ def login():
     if isBusy():
         toast("Please complete the current operation before starting another")
         return
-    if len(get("username")) > 0:
-        toast("Already logged in. Reload the page to sign into another account.")
     set("busy", True)
     with use_scope("scope2"):
         clear(scope = "scope1")
-        put_markdown("**Not logged in**")
         done = False
         while not done:
             pswd = input("Please enter your account password to login")
