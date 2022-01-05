@@ -223,6 +223,7 @@ def login():
         toast("Please complete the current operation before starting another")
         return
     set("busy", True)
+    set_env(title = "Log In")
     with use_scope("scope2"):
         clear(scope = "scope1")
         pswd = input("Please enter your account password to login")
