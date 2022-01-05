@@ -228,7 +228,7 @@ def judgeSubmission(settings, username, problem, lang, cleaned):
                 put_markdown(msgContent)
 
                 while rpc.is_alive():
-                    newcontent = settings.find_one({"_id":judges['_id']})['output'].replace("diff", "").replace("`", "")
+                    newcontent = settings.find_one({"_id":judges['_id']})['output'].replace("diff", "").replace("`", "").replace("+", "").replace("-", "")
                     if newcontent != msgContent and len(newcontent) > 0:
                         msgContent = newcontent
                         try:

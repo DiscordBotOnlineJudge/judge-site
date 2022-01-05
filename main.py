@@ -292,10 +292,10 @@ def get(key):
     return settings.find_one({"type":"session", "idx":getSession()})[key]
 
 def register():
-    set_env(title = "DBOJ Online Console")
+    set_env(title = "Discord Bot Online Judge")
 
     try:
-        put_markdown("# Welcome to the Discord Bot Online Judge administrator console!")
+        put_markdown("# Welcome to the Discord Bot Online Judge web interface!")
         
         if not "session" in os.environ:
             os.environ['session'] = '1'
