@@ -281,12 +281,15 @@ def rank():
         toast("Please complete the current operation before starting another")
         return
     busy = True
-    with use_scope("scope1"):
-        clear(scope = "scope1")
-        put_markdown("## View contest rankings:")
-        op = [x['name'] for x in settings.find({"type":"contest"})]
-        contest = select(options = op, label = "Select a contest to view:")
-        put_markdown(judge.getScoreboard(settings, contest))
+    try:
+        with use_scope("scope1"):
+            clear(scope = "scope1")
+            put_markdown("## View contest rankings:")
+            op = [x['name'] for x in settings.find({"type":"contest"})]
+            contest = select(options = op, label = "Select a contest to view:")
+            put_markdown(judge.getScoreboard(settings, contest))
+    except:
+        print("Error reading scoreboard")
     busy = False
 
 def rem():
