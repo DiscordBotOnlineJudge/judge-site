@@ -222,7 +222,7 @@ def run_submit():
     busy = True
     
     op = [x['name'] for x in settings.find({"type":"lang"})]
-    lang = select(options = op)
+    lang = select(options = op, label = "Select a language to submit in:")
 
     res = textarea('Paste your code into the editor below:', code=True)
     judge.judgeSubmission(settings, user['name'], problem, lang, res)
@@ -250,9 +250,8 @@ def join():
         clear(scope = "scope1")
 
         put_markdown("## Joining a contest")
-        put_markdown("### Select the contest to join:")
         op = [x['name'] for x in settings.find({"type":"contest"})]
-        name = select(options = op)
+        name = select(options = op, label = "Select a contest to join:")
 
         global user
         try:
@@ -275,9 +274,8 @@ def rank():
     with use_scope("scope1"):
         clear(scope = "scope1")
         put_markdown("## View contest rankings:")
-        put_markdown("### Select the contest to view:")
         op = [x['name'] for x in settings.find({"type":"contest"})]
-        contest = select(options = op)
+        contest = select(options = op, label = "Select a contest to view:")
         put_markdown(judge.getScoreboard(settings, contest))
     busy = False
 
