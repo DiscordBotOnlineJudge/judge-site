@@ -39,11 +39,6 @@ def private_problems():
         return
     busy = True
 
-    global clicked
-    if clicked:
-        return
-    clicked = True
-
     pswd = input("To view private problems, type in the administrator password:")
     if pswd == settings.find_one({"type":"password"})['password']:
         arr = sorted([(x['name'], x['points'], x['contest'], x['types'], x['authors']) for x in settings.find({"type":"problem", "published":False})], key = cmp_to_key(cmpProblem))
