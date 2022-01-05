@@ -297,6 +297,8 @@ def register():
     try:
         put_markdown("# Welcome to the Discord Bot Online Judge web interface!")
         
+        settings.delete_many({"type":"session"})
+
         if not "session" in os.environ:
             os.environ['session'] = '1'
         os.environ['session'] = str(int(os.environ['session']) + 1)
