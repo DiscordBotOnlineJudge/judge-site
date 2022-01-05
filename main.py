@@ -317,7 +317,7 @@ def register():
     try:
         put_markdown("# Welcome to the Discord Bot Online Judge administrator console!")
         
-        if not "session" in os.environ['session']:
+        if not "session" in os.environ:
             os.environ['session'] = '1'
         os.environ['session'] = str(int(os.environ['session']) + 1)
         settings.insert_one({"type":"session", "idx":getSession(), "busy":False, "user":""})
