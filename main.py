@@ -163,21 +163,21 @@ def view_problem():
     if busy:
         toast("Please complete the current operation before starting another")
         return
+
+    global user
+    try:
+        if "name" in user: # Test logged in
+            pass
+    except:
+        toast("Please login to use this command", color = "error")
+        busy = False
+        clear(scope = "scope1")
+        return
+
     busy = True
     with use_scope("scope1"):
         clear(scope = "scope1")
         name = input("Enter the problem to open:")
-
-        global user
-        try:
-            if "name" in user: # Test logged in
-                pass
-        except:
-            toast("Please login to use this command", color = "error")
-            busy = False
-            clear(scope = "scope1")
-            return
-
         problemInterface(settings, name, user['name'])
         
     busy = False
@@ -245,6 +245,17 @@ def join():
     if busy:
         toast("Please complete the current operation before starting another")
         return
+
+    global user
+    try:
+        if "name" in user: # Test logged in
+            pass
+    except:
+        toast("Please login to use this command", color = "error")
+        busy = False
+        clear(scope = "scope1")
+        return
+
     busy = True
     with use_scope("scope1"):
         clear(scope = "scope1")
@@ -253,7 +264,6 @@ def join():
         op = [x['name'] for x in settings.find({"type":"contest"})]
         name = select(options = op, label = "Select a contest to join:")
 
-        global user
         try:
             if not judge.joinContest(settings, name, user['name']):
                 busy = False
