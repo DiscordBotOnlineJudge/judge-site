@@ -34,10 +34,10 @@ def enterPassword():
 
 def private_problems():
     global busy
-    if busy:
+    if isBusy():
         toast("Please complete the current operation before starting another")
         return
-    busy = True
+    set("busy", True)
 
     with use_scope("scope1"):
         pswd = input("To view private problems, type in the administrator password:")
@@ -53,11 +53,11 @@ def private_problems():
             scroll_to(position = "bottom")
         else:
             toast("Sorry, the password you entered was incorrect", color = "error")
-    busy = False
+    set("busy", False)
 
 def lang():
     global busy
-    if busy:
+    if isBusy():
         toast("Please complete the current operation before starting another")
         return
     with use_scope("scope1"):
@@ -74,7 +74,7 @@ def lang():
 
 def info():
     global busy
-    if busy:
+    if isBusy():
         toast("Please complete the current operation before starting another")
         return
     with use_scope("scope1"):
@@ -83,16 +83,16 @@ def info():
 
 def contest():
     global busy
-    if busy:
+    if isBusy():
         toast("Please complete the current operation before starting another")
         return
-    busy = True
+    set("busy", True)
     with use_scope("scope1"):
         clear(scope = "scope1")
 
         put_markdown("## Setting up a contest")
         if not enterPassword():
-            busy = False
+            set("busy", False)
             return
 
         name = input("Enter the contest name:")
@@ -121,11 +121,11 @@ def contest():
         settings.insert_one({"type":"contest", "name":name, "start":start, "end":end, "problems":problems, "len":ll})
 
         put_text("Successfully created contest `" + str(name) + "`! You may now close this page.")
-    busy = False
+    set("busy", False)
 
 def view_problems():
     global busy
-    if busy:
+    if isBusy():
         toast("Please complete the current operation before starting another")
         return
     with use_scope("scope1"):
@@ -146,7 +146,7 @@ def view_problems():
 
 def about():
     global busy
-    if busy:
+    if isBusy():
         toast("Please complete the current operation before starting another")
         return
     with use_scope("scope1"):
@@ -155,7 +155,7 @@ def about():
 
 def view_problem():
     global busy
-    if busy:
+    if isBusy():
         toast("Please complete the current operation before starting another")
         return
 
@@ -165,17 +165,17 @@ def view_problem():
             pass
     except:
         toast("Please login to use this command", color = "error")
-        busy = False
+        set("busy", False)
         clear(scope = "scope1")
         return
 
-    busy = True
+    set("busy", True)
     with use_scope("scope1"):
         clear(scope = "scope1")
         name = input("Enter the problem to open:")
         problemInterface(settings, name, user['name'])
         
-    busy = False
+    set("busy", False)
 
 def problemInterface(settings, problem, user):
     try:
@@ -198,8 +198,7 @@ def problemInterface(settings, problem, user):
         except:
             put_markdown("Sorry, this problem does not yet have a problem statement.")
 
-        global p
-        p = problem
+        set("problem", problem)
         put_button("Submit solution", onclick = run_submit, outline = True)
 
     except Exception as e:
@@ -210,11 +209,8 @@ def problemInterface(settings, problem, user):
         print(e)
 
 def run_submit():
-    global busy
-    global user
-    global p
-    problem = p
-    busy = True
+    problem = get("problem")
+    set("busy", True)
     
     op = [x['name'] for x in settings.find({"type":"lang"})]
     lang = select(options = op, label = "Select a language to submit in:")
@@ -222,7 +218,7 @@ def run_submit():
     res = textarea('Paste your code into the editor below:', code=True)
     judge.judgeSubmission(settings, user['name'], problem, lang, res)
 
-    busy = False
+    set("busy", False)
 
 def login():
     with use_scope("scope2"):
@@ -239,22 +235,20 @@ def login():
                 done = True  
 
 def join():
-    global busy
-    if busy:
+    if isBusy():
         toast("Please complete the current operation before starting another")
         return
 
-    global user
     try:
         if "name" in user: # Test logged in
             pass
     except:
         toast("Please login to use this command", color = "error")
-        busy = False
+        set("busy", False)
         clear(scope = "scope1")
         return
 
-    busy = True
+    set("busy", True)
     with use_scope("scope1"):
         clear(scope = "scope1")
 
@@ -264,21 +258,20 @@ def join():
 
         try:
             if not judge.joinContest(settings, name, user['name']):
-                busy = False
+                set("busy", False)
                 return
             judge.instructions(name)
         except:
             toast("Please login to use this command", color = "error")
-            busy = False
+            set("busy", False)
             clear(scope = "scope1")
-    busy = False
+    set("busy", False)
 
 def rank():
-    global busy
-    if busy:
+    if isBusy():
         toast("Please complete the current operation before starting another")
         return
-    busy = True
+    set("busy", True)
     try:
         with use_scope("scope1"):
             clear(scope = "scope1")
@@ -288,11 +281,10 @@ def rank():
             put_markdown(judge.getScoreboard(settings, contest))
     except:
         print("Error reading scoreboard")
-    busy = False
+    set("busy", False)
 
 def rem():
-    global busy
-    if busy:
+    if isBusy():
         toast("Please complete the current operation before starting another")
         return
     with use_scope("scope1"):
@@ -304,14 +296,31 @@ def rem():
             toast("Please login to use this command", color = "error")
             clear(scope = "scope1")
 
+def getSession():
+    return int(os.environ['session'])
+
+def isBusy():
+    return settings.find_one({"type":"session", "idx":getSession()})['busy']
+
+def username():
+    return settings.find_one({"type":"session", "idx":getSession()})['user']
+
+def set(key, val):
+    settings.update_one({"type":"session", "idx":getSession()}, {"$set", {key:val}})
+
+def get(key):
+    return settings.find_one({"type":"session", "idx":getSession()})[key]
+
 def register():
     set_env(title = "DBOJ Online Console")
 
     try:
         put_markdown("# Welcome to the Discord Bot Online Judge administrator console!")
         
-        global busy
-        busy = False
+        if not "session" in os.environ['session']:
+            os.environ['session'] = '1'
+        os.environ['session'] = str(int(os.environ['session']) + 1)
+        settings.insert_one({"type":"session", "idx":getSession(), "busy":False, "user":""})
 
         put_button("Problem/Contest setting documentation", onclick = info, outline = True)
         put_button("Language Info", onclick = lang, outline = True)
