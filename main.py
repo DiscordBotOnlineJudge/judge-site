@@ -55,7 +55,7 @@ def private_problems(session):
             put_table(data)
             scroll_to(position = "bottom")
         else:
-            toast("Please log in with an admin account to view private problems", duration = 5)
+            toast("Please log in with an admin account to view private problems", duration = 5, onclick = functools.partial(login, session))
 
 def lang(session):
     if isBusy(session):
@@ -95,7 +95,7 @@ def contest(session):
 
         put_markdown("## Setting up a contest")
         if not isAdmin(session):
-            toast("Please log in with an admin account to set up contests", duration = 5)
+            toast("Please log in with an admin account to set up contests", duration = 5, onclick = functools.partial(login, session))
             set(session, "busy", False)
             return
 
@@ -163,7 +163,7 @@ def view_problem(session):
         return
     
     if len(get(session, "username")) == 0: # Test logged in
-        toast("Please login to use this command", color = "error")
+        toast("Please login to use this command", color = "error", onclick = functools.partial(login, session))
         set(session, "busy", False)
         clear(scope = "scope1")
         return
@@ -238,7 +238,7 @@ def login(session):
         pswd = input("Please enter your account password to login")
         user = settings.find_one({"type":"account", "pswd":pswd.strip()})
         if user is None:
-            toast("Could not find an account associated with the given password. Click \"Log In\" to try again.", color = "error")
+            toast("Could not find an account associated with the given password. Click \"Log In\" to try again.", color = "error", onclick = functools.partial(login, session))
         else:
             set(session, "username", user['name'])
             clear(scope = "scope2")
@@ -251,7 +251,7 @@ def join(session):
         return
 
     if len(get(session, "username")) == 0: # Test logged in
-        toast("Please login to use this command", color = "error")
+        toast("Please login to use this command", color = "error", onclick = functools.partial(login, session))
         set(session, "busy", False)
         clear(scope = "scope1")
         return
@@ -271,7 +271,7 @@ def join(session):
                 return
             judge.instructions(name)
         except:
-            toast("Please login to use this command", color = "error")
+            toast("Please login to use this command", color = "error", onclick = functools.partial(login, session))
             set(session, "busy", False)
             clear(scope = "scope1")
     set(session, "busy", False)
@@ -306,7 +306,7 @@ def rem(session):
         if len(get(session, "username")) > 0:
             put_markdown("## Time remaining for joined contests:\n" + judge.remaining(settings, get(session, "username")))
         else:
-            toast("Please login to use this command", color = "error")
+            toast("Please login to use this command", color = "error", onclick = functools.partial(login, session))
             clear(scope = "scope1")
 
 def getSession() -> int:
