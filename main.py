@@ -40,6 +40,9 @@ def isAdmin(session):
     return not settings.find_one({"type":"access", "mode":"admin", "name":user}) is None
 
 def private_problems(session):
+    if get(session, "pp"):
+        return
+    set(session, "pp", True)
     with use_scope("scope1"):
         if isAdmin(session):
             arr = sorted([(x['name'], x['points'], x['contest'], x['types'], x['authors']) for x in settings.find({"type":"problem", "published":False})], key = cmp_to_key(cmpProblem))
@@ -126,6 +129,7 @@ def view_problems(session):
         toast("Please complete the current operation before starting another", duration = 5)
         return
     set_env(title = "View all problems")
+    set(session, "pp", False)
     with use_scope("scope1"):
         clear(scope = "scope1")
         arr = sorted([(x['name'], x['points'], x['types'], x['authors']) for x in settings.find({"type":"problem", "published":True})], key = cmp_to_key(cmpProblem))
