@@ -54,7 +54,6 @@ def private_problems(session):
         else:
             toast("Sorry, the password you entered was incorrect", color = "error")
     set(session, "busy", False)
-    set(session, "pp", False)
 
 def lang(session):
     if isBusy(session):
@@ -127,6 +126,7 @@ def view_problems(session):
         toast("Please complete the current operation before starting another")
         return
     set_env(title = "View all problems")
+    set(session, "pp", False)
     with use_scope("scope1"):
         clear(scope = "scope1")
         arr = sorted([(x['name'], x['points'], x['types'], x['authors']) for x in settings.find({"type":"problem", "published":True})], key = cmp_to_key(cmpProblem))
