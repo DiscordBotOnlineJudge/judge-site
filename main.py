@@ -1,5 +1,5 @@
 import pywebio
-from pywebio.input import input, FLOAT, file_upload, textarea, select
+from pywebio.input import input, FLOAT, file_upload, textarea, select, input_group, NUMBER
 from pywebio.output import put_text, put_html, put_markdown, put_table, put_file, scroll_to, put_button, use_scope, clear, toast, popup
 from pywebio.session import set_env
 import pymongo
@@ -83,6 +83,12 @@ def info(session):
         clear(scope = "scope1")
         put_markdown(open("problem_setting.md", "r").read())
 
+def check(data):
+    name = data['name']
+    prev = settings.find_one({"type":"contest", "name":name})
+    if not prev is None:
+        return ("name", "An existing contest with the name \"" + name + "\" was found. If you would like to edit or delete this contest, please contact me.")
+
 def contest(session):
     if isBusy(session):
         toast("Please complete the current operation before starting another", duration = 5)
@@ -99,32 +105,33 @@ def contest(session):
             set(session, "busy", False)
             return
 
-        name = input("Enter the contest name:")
+        data = input_group("New Contest Info", [
+            input('Enter the contest name:', name='name'),
+            input('Enter the contest start time in the format YYYY MM DD HH MM SS (24-hour time):', name='start'),
+            input("Enter the contest end time in the format YYYY MM DD HH MM SS (24-hour time):", name="end"),
+            input("Enter the number of problems in the contest:", name="problems", type=NUMBER),
+            input("How long should the participant window be (in seconds): ", name="len", type=NUMBER),
+            textarea("Paste the contest instructions here (will be shown as a user starts a contest)", name="instructions")
+        ], validate = check)
 
-        prev = settings.find_one({"type":"contest", "name":name})
-        if not prev is None:
-            put_text("An existing contest with the name \"" + name + "\" was found. If you would like to edit or delete this contest, please contact me.")
-            return
-
-        start = input("Enter the contest start time in the format YYYY MM DD HH MM SS (24-hour time):\n")
-        end = input("Enter the contest end time in the format YYYY MM DD HH MM SS (24-hour time):\n")
-        problems = int(input("Enter the number of problems in the contest:", type=FLOAT))
-        ll = int(input("How long should the participant window be (in seconds): ", type=FLOAT))
-
-        inst = textarea("Paste the contest instructions here (will be shown as a user starts a contest)")
+        inst = data['instructions']
         with open("instructions.txt", "w") as f:
             f.write(inst)
             f.flush()
             f.close()
+
+        data['type'] = 'contest'
+        name = data['name']
         
         stc = storage.Client()
         bucket = stc.get_bucket("discord-bot-oj-file-storage")
         blob = bucket.blob("ContestInstructions/" + name + ".txt")
         blob.upload_from_filename("instructions.txt")
 
-        settings.insert_one({"type":"contest", "name":name, "start":start, "end":end, "problems":problems, "len":ll})
+        settings.insert_one(data)
 
-        put_text("Successfully created contest `" + str(name) + "`! You may now close this page.")
+        put_markdown("Successfully created contest `" + str(name) + "`! You may now close this page.")
+        toast("Success!", color = "success")
     set(session, "busy", False)
 
 def view_problems(session):
