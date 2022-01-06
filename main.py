@@ -66,9 +66,7 @@ def lang(session):
         data = [["Language", "Compilation", "Execution"]]
         g = settings.find({"type":"lang"})
         for x in g:
-            lg = [x['name']]
-            lg.append(x['compl'].format(x = 0, path="path") if len(x['compl']) > 0 else "not a compiled language")
-            lg.append(x['run'].format(x = 0, t = 0, path="path"))
+            lg = [x['name'], put_markdown(("```" + x['compl'].format(x = 0, path="path") + "```") if len(x['compl']) > 0 else "not a compiled language"), put_markdown("```" + x['run'].format(x = 0, t = 0, path="path") + "```")]
             data.append(lg)
         put_markdown("## Exact compilation and execution commands for all languages")
         put_table(data)
