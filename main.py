@@ -337,7 +337,7 @@ def register():
         put_button("Language Info", onclick = functools.partial(lang, session), outline = True)
         put_button("View contest rankings", onclick = functools.partial(rank, session), outline = True)
         put_button("Set up a new contest", onclick = functools.partial(contest, session), outline = True)
-        put_button("View all problems", onclick = functools.partial(view_problem, session), outline = True)
+        put_button("View all problems", onclick = functools.partial(view_problems, session), outline = True)
         put_button("About page", onclick = functools.partial(about, session), outline = True)
 
         put_markdown("### Web online judge")
