@@ -52,11 +52,11 @@ def private_problems(session):
             put_table(data)
             scroll_to(position = "bottom")
         else:
-            toast("Please log in with an admin account to view private problems")
+            toast("Please log in with an admin account to view private problems", duration = 5)
 
 def lang(session):
     if isBusy(session):
-        toast("Please complete the current operation before starting another")
+        toast("Please complete the current operation before starting another", duration = 5)
         return
     set_env(title = "DBOJ language info")
     with use_scope("scope1"):
@@ -71,7 +71,7 @@ def lang(session):
 
 def info(session):
     if isBusy(session):
-        toast("Please complete the current operation before starting another")
+        toast("Please complete the current operation before starting another", duration = 5)
         return
     set_env(title = "DBOJ Documentation")
     with use_scope("scope1"):
@@ -80,7 +80,7 @@ def info(session):
 
 def contest(session):
     if isBusy(session):
-        toast("Please complete the current operation before starting another")
+        toast("Please complete the current operation before starting another", duration = 5)
         return
     set(session, "busy", True)
     set_env(title = "Setting up new contest")
@@ -89,7 +89,7 @@ def contest(session):
 
         put_markdown("## Setting up a contest")
         if not isAdmin(session):
-            toast("Please log in with an admin account to set up contests")
+            toast("Please log in with an admin account to set up contests", duration = 5)
             set(session, "busy", False)
             return
 
@@ -123,7 +123,7 @@ def contest(session):
 
 def view_problems(session):
     if isBusy(session):
-        toast("Please complete the current operation before starting another")
+        toast("Please complete the current operation before starting another", duration = 5)
         return
     set_env(title = "View all problems")
     with use_scope("scope1"):
@@ -141,7 +141,7 @@ def view_problems(session):
 
 def about(session):
     if isBusy(session):
-        toast("Please complete the current operation before starting another")
+        toast("Please complete the current operation before starting another", duration = 5)
         return
     set_env(title = "About DBOJ")
     with use_scope("scope1"):
@@ -150,7 +150,7 @@ def about(session):
 
 def view_problem(session):
     if isBusy(session):
-        toast("Please complete the current operation before starting another")
+        toast("Please complete the current operation before starting another", duration = 5)
         return
     
     if len(get(session, "username")) == 0: # Test logged in
@@ -218,7 +218,7 @@ def run_submit(session):
 
 def login(session):
     if isBusy(session):
-        toast("Please complete the current operation before starting another")
+        toast("Please complete the current operation before starting another", duration = 5)
         return
     set(session, "busy", True)
     set_env(title = "Log In")
@@ -236,7 +236,7 @@ def login(session):
 
 def join(session):
     if isBusy(session):
-        toast("Please complete the current operation before starting another")
+        toast("Please complete the current operation before starting another", duration = 5)
         return
 
     if len(get(session, "username")) == 0: # Test logged in
@@ -266,7 +266,7 @@ def join(session):
 
 def rank(session):
     if isBusy(session):
-        toast("Please complete the current operation before starting another")
+        toast("Please complete the current operation before starting another", duration = 5)
         return
     set_env(title = "Contest rankings")
     set(session, "busy", True)
@@ -279,12 +279,12 @@ def rank(session):
             set_env(title = ("Contest rankings for " + contest))
             put_markdown(judge.getScoreboard(settings, contest))
     except:
-        toast("Internal error with reading scoreboard (might be an archived contest)", color = "error")
+        toast("Internal error with reading scoreboard (might be an archived contest)", duration = 5)
     set(session, "busy", False)
 
 def rem(session):
     if isBusy(session):
-        toast("Please complete the current operation before starting another")
+        toast("Please complete the current operation before starting another", duration = 5)
         return
     set_env(title = "Remaining contest window time")
     with use_scope("scope1"):
@@ -309,7 +309,7 @@ def get(session, key):
 
 def account(session):
     if isBusy(session):
-        toast("Please complete the current operation before starting another")
+        toast("Please complete the current operation before starting another", duration = 5)
         return
     set_env(title = "Creating an account")
     with use_scope("scope1"):
