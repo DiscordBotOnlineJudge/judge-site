@@ -185,15 +185,15 @@ def problemInterface(session, settings, problem, user):
             toast("Error: Problem not found", color = "error")
             return
         
+        put_markdown("### Problem statement for problem `" + problem + "`")
+        put_button("Submit solution", onclick = functools.partial(run_submit, session), outline = True)
         try:
             file.download_to_filename("problem.txt")
-            put_markdown("### Problem statement for problem `" + problem + "`")
             put_markdown(open("problem.txt").read())
         except:
             put_markdown("Sorry, this problem does not yet have a problem statement.")
 
         set(session, "problem", problem)
-        put_button("Submit solution", onclick = functools.partial(run_submit, session), outline = True)
 
     except Exception as e:
         toast("An error occurred. Please make sure your input is valid. Please reload to try again or contact me.", color = "error")
