@@ -53,6 +53,7 @@ def private_problems(session):
             scroll_to(position = "bottom")
         else:
             toast("Sorry, the password you entered was incorrect", color = "error")
+            set(session, "pp", False)
     set(session, "busy", False)
 
 def lang(session):
