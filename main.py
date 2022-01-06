@@ -138,7 +138,7 @@ def view_problems(session):
         put_markdown("## All published problems on the judge:")
         put_table(data)
 
-        put_button("View private problems", onclick = private_problems, outline = True)
+        put_button("View private problems", onclick = functools.partial(private_problems, session), outline = True)
 
 def about(session):
     if isBusy(session):
