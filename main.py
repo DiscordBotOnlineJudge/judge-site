@@ -33,15 +33,15 @@ def enterPassword():
         toast("The password you entered was incorrect. Please try again.", color = "error")
         return False
 
-def private_problems(session):
-    if get(session, "pp"):
-        return
-    set(session, "busy", True)
-    set(session, "pp", True)
+def isAdmin(session):
+    user = get(session, "username")
+    if len(user) == 0:
+        return False
+    return not settings.find_one({"type":"access", "mode":"admin", "name":user}) is None
 
+def private_problems(session):
     with use_scope("scope1"):
-        pswd = input("To view private problems, type in the administrator password:")
-        if pswd == settings.find_one({"type":"password"})['password']:
+        if isAdmin(session):
             arr = sorted([(x['name'], x['points'], x['contest'], x['types'], x['authors']) for x in settings.find({"type":"problem", "published":False})], key = cmp_to_key(cmpProblem))
             data = [
                 ['Problem Name', 'Points/Difficulty', 'Contest', 'Problem Types', 'Authors'],
@@ -52,9 +52,7 @@ def private_problems(session):
             put_table(data)
             scroll_to(position = "bottom")
         else:
-            toast("Sorry, the password you entered was incorrect", color = "error")
-            set(session, "pp", False)
-    set(session, "busy", False)
+            toast("Please log in with an admin account to view private problems")
 
 def lang(session):
     if isBusy(session):
@@ -90,7 +88,8 @@ def contest(session):
         clear(scope = "scope1")
 
         put_markdown("## Setting up a contest")
-        if not enterPassword():
+        if not isAdmin(session):
+            toast("Please log in with an admin account to set up contests")
             set(session, "busy", False)
             return
 
@@ -127,7 +126,6 @@ def view_problems(session):
         toast("Please complete the current operation before starting another")
         return
     set_env(title = "View all problems")
-    set(session, "pp", False)
     with use_scope("scope1"):
         clear(scope = "scope1")
         arr = sorted([(x['name'], x['points'], x['types'], x['authors']) for x in settings.find({"type":"problem", "published":True})], key = cmp_to_key(cmpProblem))
