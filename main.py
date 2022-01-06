@@ -121,6 +121,7 @@ def contest(session):
             f.close()
 
         data['type'] = 'contest'
+        name = data['name']
         
         stc = storage.Client()
         bucket = stc.get_bucket("discord-bot-oj-file-storage")
@@ -129,7 +130,8 @@ def contest(session):
 
         settings.insert_one(data)
 
-        put_text("Successfully created contest `" + str(name) + "`! You may now close this page.")
+        put_markdown("Successfully created contest `" + str(name) + "`! You may now close this page.")
+        toast("Success!", color = "success")
     set(session, "busy", False)
 
 def view_problems(session):
