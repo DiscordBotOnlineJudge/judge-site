@@ -6,7 +6,7 @@ To set a problem on the judge, first ask me (`jiminycricket#2701`) to provide yo
 1. A `params.yaml` file containing the following information:
 ```
 name: problemName
-authors: [author1, author2, ...]
+authors: [author1, author2, ... , tester1, tester2, ...]
 difficulty: numberOfPoints
 timelimit: [timeLimitPython, timeLimitJava, timeLimitC++]
 batches: [casesInBatch1, casesInBatch2, ...]
