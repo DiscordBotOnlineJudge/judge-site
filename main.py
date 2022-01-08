@@ -84,6 +84,9 @@ def info(session):
         put_markdown(open("problem_setting.md", "r").read())
 
 def check(data):
+    for key in data:
+        if len(data['key']) == 0:
+            return (key, "This field cannot be blank")
     name = data['name']
     prev = settings.find_one({"type":"contest", "name":name})
     if not prev is None:
