@@ -85,7 +85,7 @@ def info(session):
 
 def check(data):
     for key in data:
-        if len(data['key']) == 0:
+        if len(data[key]) == 0:
             return (key, "This field cannot be blank")
     name = data['name']
     prev = settings.find_one({"type":"contest", "name":name})
