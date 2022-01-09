@@ -44,6 +44,7 @@ def private_problems(session):
         return
     set(session, "pp", True)
     with use_scope("scope1"):
+        put_markdown("Compiling private problems...")
         arr = []
         for x in settings.find({"type":"problem", "published":False}):
             if not judge.perms(settings, x, get(session, "username")):
