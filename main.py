@@ -44,13 +44,16 @@ def private_problems(session):
         return
     set(session, "pp", True)
     with use_scope("scope1"):
-        arr = sorted([(x['name'], x['points'], x['contest'], x['types'], x['authors']) for x in settings.find({"type":"problem", "published":False})], key = cmp_to_key(cmpProblem))
+        arr = []
+        for x in settings.find({"type":"problem", "published":False}):
+            if not judge.perms(settings, x, get(session, "username")):
+                arr.append((x['name'], x['points'], x['contest'], x['types'], x['authors']))
+        arr = sorted(arr, key = cmp_to_key(cmpProblem))
         data = [
             ['Problem Name', 'Points/Difficulty', 'Contest', 'Problem Types', 'Authors'],
         ]
         for x in arr:
-            if judge.perms(settings, x, get(session, "username")):
-                data.append([x[0], x[1], x[2], ", ".join(x[3]), ", ".join(x[4])])
+            data.append([x[0], x[1], x[2], ", ".join(x[3]), ", ".join(x[4])])
         put_markdown("## Private problems visible to you:")
         put_table(data)
         scroll_to(position = "bottom")
