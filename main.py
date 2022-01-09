@@ -305,9 +305,24 @@ def rank(session):
             contest = select(options = op, label = "Select a contest to view:")
             set_env(title = ("Contest rankings for " + contest))
             put_markdown(judge.getScoreboard(settings, contest))
+            put_button("Refresh", onclick = functools.partial(rank_specific, contest), outline = True)
     except:
         toast("Internal error with reading scoreboard (might be an archived contest)", duration = 5)
     set(session, "busy", False)
+
+def rank_specific(contest):
+    with use_scope("scope1"):
+        scroll_to(scope = "scope1")
+        clear(scope = "scope1")
+        try:
+            with use_scope("scope1"):
+                clear(scope = "scope1")
+                put_markdown("## View contest rankings:")
+                set_env(title = ("Contest rankings for " + contest))
+                put_markdown(judge.getScoreboard(settings, contest))
+                put_button("Refresh", onclick = functools.partial(rank_specific, contest), outline = True)
+        except:
+            toast("Internal error with reading scoreboard (might be an archived contest)", duration = 5)
 
 def rem(session):
     if isBusy(session):
@@ -319,10 +334,11 @@ def rem(session):
         clear(scope = "scope1")
         if len(get(session, "username")) > 0:
             put_markdown("## Time remaining for joined contests:\n" + judge.remaining(settings, get(session, "username")))
+            put_button("Refresh", onclick = functools.partial(rem, session), outline = True)
         else:
             toast("Please login to use this command", color = "error", onclick = functools.partial(login, session))
             clear(scope = "scope1")
-
+        
 def getSession() -> int:
     return int(os.environ['session'])
 
