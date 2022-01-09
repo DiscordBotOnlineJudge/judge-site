@@ -44,18 +44,16 @@ def private_problems(session):
         return
     set(session, "pp", True)
     with use_scope("scope1"):
-        if isAdmin(session):
-            arr = sorted([(x['name'], x['points'], x['contest'], x['types'], x['authors']) for x in settings.find({"type":"problem", "published":False})], key = cmp_to_key(cmpProblem))
-            data = [
-                ['Problem Name', 'Points/Difficulty', 'Contest', 'Problem Types', 'Authors'],
-            ]
-            for x in arr:
+        arr = sorted([(x['name'], x['points'], x['contest'], x['types'], x['authors']) for x in settings.find({"type":"problem", "published":False})], key = cmp_to_key(cmpProblem))
+        data = [
+            ['Problem Name', 'Points/Difficulty', 'Contest', 'Problem Types', 'Authors'],
+        ]
+        for x in arr:
+            if judge.perms(settings, x, get(session, "username")):
                 data.append([x[0], x[1], x[2], ", ".join(x[3]), ", ".join(x[4])])
-            put_markdown("## All private problems:")
-            put_table(data)
-            scroll_to(position = "bottom")
-        else:
-            toast("Please log in with an admin account to view private problems", duration = 5, onclick = functools.partial(login, session))
+        put_markdown("## Private problems visible to you:")
+        put_table(data)
+        scroll_to(position = "bottom")
 
 def lang(session):
     if isBusy(session):
