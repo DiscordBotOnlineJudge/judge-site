@@ -83,10 +83,14 @@ def info(session):
         clear(scope = "scope1")
         put_markdown(open("problem_setting.md", "r").read())
 
+def checkDate(date):
+    pass
+
 def check(data):
     for key in data:
         if len(data[key]) == 0:
             return (key, "This field cannot be blank")
+    
     name = data['name']
     prev = settings.find_one({"type":"contest", "name":name})
     if not prev is None:
@@ -275,15 +279,13 @@ def join(session):
         op = [x['name'] for x in settings.find({"type":"contest"})]
         name = select(options = op, label = "Select a contest to join:")
 
-        try:
-            if not judge.joinContest(settings, name, get(session, "username")):
-                set(session, "busy", False)
-                return
-            judge.instructions(name)
-        except:
-            toast("Please login to use this command", color = "error", onclick = functools.partial(login, session))
+        if len(name) == 0:
+            toast("No contest was selected")
+            return
+
+        if not judge.joinContest(settings, name, get(session, "username")):
             set(session, "busy", False)
-            clear(scope = "scope1")
+            return
     set(session, "busy", False)
 
 def rank(session):
