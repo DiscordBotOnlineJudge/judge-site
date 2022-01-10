@@ -297,6 +297,7 @@ def join(session):
 
         if len(name) == 0:
             toast("No contest was selected")
+            set(session, "busy", False)
             return
 
         if not judge.joinContest(settings, name, get(session, "username")):
