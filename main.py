@@ -9,6 +9,8 @@ import time
 import judge
 import sys
 import functools
+import uuid
+import hashlib
 from google.cloud import storage
 from functools import cmp_to_key
 from pymongo import MongoClient
@@ -25,10 +27,18 @@ def cmpProblem(a, b):
     else:
         return a[1] - b[1]
 
+def hashCode(password):
+    salt = uuid.uuid4().hex
+    return hashlib.sha256(salt.encode() + password.encode()).hexdigest() + ':' + salt
+
+def check_equal(hashed_password, user_password):
+    password, salt = hashed_password.split(':')
+    return password == hashlib.sha256(salt.encode() + user_password.encode()).hexdigest()
+
 def enterPassword():
     with use_scope("scope1"):
         getUserPswd = input("Please enter the administrator password:")
-        if getUserPswd == settings.find_one({"type":"password"})['password']:
+        if check_equal(settings.find_one({"type":"password"})['password'], getUserPswd):
             return True
         toast("The password you entered was incorrect. Please try again.", color = "error")
         return False
@@ -252,7 +262,11 @@ def login(session):
     with use_scope("scope2"):
         clear(scope = "scope1")
         pswd = input("Please enter your account password to login")
-        user = settings.find_one({"type":"account", "pswd":pswd.strip()})
+        user = None
+        for x in settings.find({"type":"account"}):
+            if check_equal(x['pswd'], pswd):
+                user = x
+                break
         if user is None:
             toast("Could not find an account associated with the given password. Click \"Log In\" to try again.", color = "error", onclick = functools.partial(login, session))
         else:
