@@ -377,10 +377,11 @@ def account(session):
 
 def register():
     set_env(title = "Discord Bot Online Judge")
-
-    try:
+    with use_scope("top-bar"):
+        put_html(open("nav-bar.html").read())
         put_markdown("# Welcome to the Discord Bot Online Judge web interface!")
 
+    try:
         if not "session" in os.environ:
             os.environ['session'] = '1'
         os.environ['session'] = str(int(os.environ['session']) + 1)
