@@ -4,7 +4,7 @@ To set a problem on the judge, first ask me (`jiminycricket#2701`) to provide yo
 
 **On the website:** Click the "Upload problem data" button above (under "Problem setting") and upload the zip file problem contents (format described below). Make sure to log in with your personal admin account.
 
-**On the discord bot** (has an 80 MB upload size limit):
+**On the discord bot** (has an 8 MB upload size limit):
 Open a direct message channel with the judge bot (`Judge#5642`) or a secure private channel with the judge and upload a zip file with the problem data contents, along with the comment `-export` (HYPHEN export).
 
 **The zip file contents should contain the following files:**
