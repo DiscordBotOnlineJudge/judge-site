@@ -22,7 +22,10 @@ def uploadProblem(settings, storage_client, author):
 
     if not existingProblem is None:
         if (not author in existingProblem['authors']):
-            return "Error: problem name `" + params["name"] + "` already exists under another author"
+            clear(scope = "scope1")
+            put_markdown("Status: **Error occurred**")
+            put_markdown("Error: problem name `" + params["name"] + "` already exists under another author")
+            return
         put_markdown("Problem with name `" + params["name"] + "` already exists. Editing problem and overwriting files...\n")
         settings.delete_one({"_id":existingProblem['_id']})
 
