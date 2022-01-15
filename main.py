@@ -55,17 +55,18 @@ def private_problems(session):
         return
     set(session, "pp", True)
     with use_scope("scope1"):
-        put_markdown("Compiling private problems...")
-        arr = []
-        for x in settings.find({"type":"problem", "published":False}):
-            if not judge.perms(settings, x, get(session, "username")):
-                arr.append((x['name'], x['points'], x['contest'], x['types'], x['authors']))
-        arr = sorted(arr, key = cmp_to_key(cmpProblem))
-        data = [
-            ['Problem Name', 'Points/Difficulty', 'Contest', 'Problem Types', 'Authors'],
-        ]
-        for x in arr:
-            data.append([x[0], x[1], x[2], ", ".join(x[3]), ", ".join(x[4])])
+        with put_loading(shape = 'border', color = 'primary'):
+            put_markdown("Compiling private problems...")
+            arr = []
+            for x in settings.find({"type":"problem", "published":False}):
+                if not judge.perms(settings, x, get(session, "username")):
+                    arr.append((x['name'], x['points'], x['contest'], x['types'], x['authors']))
+            arr = sorted(arr, key = cmp_to_key(cmpProblem))
+            data = [
+                ['Problem Name', 'Points/Difficulty', 'Contest', 'Problem Types', 'Authors'],
+            ]
+            for x in arr:
+                data.append([x[0], x[1], x[2], ", ".join(x[3]), ", ".join(x[4])])
         put_markdown("## Private problems visible to you:")
         put_table(data)
         scroll_to(position = "bottom")
@@ -378,7 +379,7 @@ def export(session):
                 return
 
             try:
-                f = file_upload("Please upload the zip file with all the problem data. Refer to the documentation for formatting", accept=".zip", max_size='128M')
+                f = file_upload("Please upload the zip file with all the problem data. Refer to the documentation for formatting. (If the progress bar is stuck at 100%, please reload the page and try again)", accept=".zip", max_size='128M')
                 open('data.zip', 'wb').write(f['content'])
             except:
                 put_markdown("Error occurred while uploading data file")
