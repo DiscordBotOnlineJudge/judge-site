@@ -1,6 +1,6 @@
 import pywebio
 from pywebio.input import input, FLOAT, file_upload, textarea, select, input_group, NUMBER
-from pywebio.output import put_text, put_html, put_markdown, put_table, put_file, scroll_to, put_button, put_buttons, use_scope, clear, toast, put_loading
+from pywebio.output import put_text, put_html, put_markdown, put_table, put_file, scroll_to, put_button, put_buttons, use_scope, clear, toast, put_loading, put_scope
 from pywebio.session import set_env
 import pymongo
 import os
@@ -434,6 +434,7 @@ def account(session):
 
 def register():
     set_env(title = "Discord Bot Online Judge")
+    put_scope("site-top")
     with use_scope("top-bar"):
         put_html(open("nav-bar.html").read())
         put_markdown("# Welcome to the Discord Bot Online Judge web interface!")
@@ -465,7 +466,7 @@ def register():
         with use_scope("scope2"):
             clear(scope = "scope1")
             put_markdown("**Not logged in**")
-        scroll_to(scope = "top-bar")
+        scroll_to(scope = "site-top")
     except Exception as e:
         toast("An error occurred. Please make sure your input is valid. Please reload to try again or contact me.", color = "error")
         exc_type, exc_obj, exc_tb = sys.exc_info()
