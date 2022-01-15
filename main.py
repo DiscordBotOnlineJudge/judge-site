@@ -397,7 +397,7 @@ def export(session):
                     return
 
                 try:
-                    f = file_upload("Please upload the zip file with all the problem data. Refer to the documentation for formatting. (If the progress bar is stuck at 100%, please reload the page and try again)", accept=".zip", max_size='128M')
+                    f = file_upload("Please upload the zip file with all the problem data. Refer to the documentation for formatting. (If the progress bar gets stuck at 100%, please reload the page and try again)", accept=".zip", max_size='128M')
                     open('data.zip', 'wb').write(f['content'])
                 except:
                     put_markdown("Error occurred while uploading data file")
