@@ -1,6 +1,6 @@
 import pywebio
 from pywebio.input import input, FLOAT, file_upload, textarea, select, input_group, NUMBER
-from pywebio.output import put_text, put_html, put_markdown, put_table, put_file, scroll_to, put_button, use_scope, clear, toast, popup
+from pywebio.output import put_text, put_html, put_markdown, put_table, put_file, scroll_to, put_button, use_scope, clear, toast, put_loading
 from pywebio.session import set_env
 import pymongo
 import os
@@ -386,16 +386,17 @@ def export(session):
                 return
 
             put_markdown("Status: **Uploading problem data**")
-            try:
-                problem_uploading.uploadProblem(settings, storage.Client(), get(session, "username"))
-            except Exception as e:
-                exc_type, exc_obj, exc_tb = sys.exc_info()
-                fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-                print(exc_type, fname, exc_tb.tb_lineno)
-                print(e)
-                clear(scope = "scope1")
-                put_markdown("Status: **Error occurred**")
-                put_markdown("Error occurred while uploading problem data:\n```\n" + str(e) + "\n```")
+            with put_loading(shape = 'border', color = 'primary'):
+                try:
+                    problem_uploading.uploadProblem(settings, storage.Client(), get(session, "username"))
+                except Exception as e:
+                    exc_type, exc_obj, exc_tb = sys.exc_info()
+                    fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+                    print(exc_type, fname, exc_tb.tb_lineno)
+                    print(e)
+                    clear(scope = "scope1")
+                    put_markdown("Status: **Error occurred**")
+                    put_markdown("Error occurred while uploading problem data:\n```\n" + str(e) + "\n```")
         else:
             toast("Please login to use this command", color = "error", onclick = functools.partial(login, session))
             clear(scope = "scope1")
