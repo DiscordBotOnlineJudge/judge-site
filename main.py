@@ -79,6 +79,7 @@ def lang(session):
     with use_scope("scope1"):
         scroll_to(scope = "scope1")
         clear(scope = "scope1")
+        clear(scope = "scope1-1")
         data = [["Language", "Compilation", "Execution"]]
         g = settings.find({"type":"lang"})
         for x in g:
@@ -95,6 +96,7 @@ def info(session):
     with use_scope("scope1"):
         scroll_to(scope = "scope1")
         clear(scope = "scope1")
+        clear(scope = "scope1-1")
         put_markdown(open("problem_setting.md", "r").read())
 
 def checkDate(date):
@@ -119,6 +121,7 @@ def contest(session):
     with use_scope("scope1"):
         scroll_to(scope = "scope1")
         clear(scope = "scope1")
+        clear(scope = "scope1-1")
 
         put_markdown("## Setting up a contest")
         if not isAdmin(session):
@@ -164,6 +167,7 @@ def view_problems(session):
     with use_scope("scope1"):
         scroll_to(scope = "scope1")
         clear(scope = "scope1")
+        clear(scope = "scope1-1")
         arr = sorted([(x['name'], x['points'], x['types'], x['authors']) for x in settings.find({"type":"problem", "published":True})], key = cmp_to_key(cmpProblem))
         data = [
             ['Problem Name', 'Points/Difficulty', 'Problem Types', 'Authors'],
@@ -183,6 +187,7 @@ def about(session):
     with use_scope("scope1"):
         scroll_to(scope = "scope1")
         clear(scope = "scope1")
+        clear(scope = "scope1-1")
         put_markdown(open("about.md", "r").read())
 
 def view_problem(session):
@@ -194,6 +199,7 @@ def view_problem(session):
         toast("Please login to use this command", color = "error", onclick = functools.partial(login, session))
         set(session, "busy", False)
         clear(scope = "scope1")
+        clear(scope = "scope1-1")
         return
     set_env(title = "View problem")
     set(session, "busy", True)
@@ -267,6 +273,7 @@ def login(session):
     set_env(title = "Log In")
     with use_scope("scope2"):
         clear(scope = "scope1")
+        clear(scope = "scope1-1")
         pswd = input("Please enter your account password to login")
         user = None
         for x in settings.find({"type":"account"}):
@@ -290,12 +297,14 @@ def join(session):
         toast("Please login to use this command", color = "error", onclick = functools.partial(login, session))
         set(session, "busy", False)
         clear(scope = "scope1")
+        clear(scope = "scope1-1")
         return
     set_env(title = "Joining a contest")
     set(session, "busy", True)
     
     with use_scope("scope1"):
         clear(scope = "scope1")
+        clear(scope = "scope1-1")
         scroll_to(scope = "scope1")
         put_markdown("## Joining a contest")
         op = [x['name'] for x in settings.find({"type":"contest"})]
@@ -321,6 +330,7 @@ def rank(session):
         with use_scope("scope1"):
             scroll_to(scope = "scope1")
             clear(scope = "scope1")
+            clear(scope = "scope1-1")
             put_markdown("## View contest rankings:")
             op = [x['name'] for x in settings.find({"type":"contest"})]
             contest = select(options = op, label = "Select a contest to view:")
@@ -332,18 +342,17 @@ def rank(session):
     set(session, "busy", False)
 
 def rank_specific(contest):
-    with use_scope("scope1"):
-        scroll_to(scope = "scope1")
-        clear(scope = "scope1")
-        try:
-            with use_scope("scope1"):
-                clear(scope = "scope1")
-                put_markdown("## View contest rankings:")
-                set_env(title = ("Contest rankings for " + contest))
-                put_markdown(judge.getScoreboard(settings, contest))
-                put_button("Refresh", onclick = functools.partial(rank_specific, contest), outline = True)
-        except:
-            toast("Internal error with reading scoreboard (might be an archived contest)", duration = 5)
+    try:
+        with use_scope("scope1"):
+            scroll_to(scope = "scope1")
+            clear(scope = "scope1")
+            clear(scope = "scope1-1")
+            put_markdown("## View contest rankings:")
+            set_env(title = ("Contest rankings for " + contest))
+            put_markdown(judge.getScoreboard(settings, contest))
+            put_button("Refresh", onclick = functools.partial(rank_specific, contest), outline = True)
+    except:
+        toast("Internal error with reading scoreboard (might be an archived contest)", duration = 5)
 
 def rem(session):
     if isBusy(session):
@@ -352,6 +361,7 @@ def rem(session):
     set_env(title = "Remaining contest window time")
     with use_scope("scope1"):
         clear(scope = "scope1")
+        clear(scope = "scope1-1")
         scroll_to(scope = "scope1")
         if len(get(session, "username")) > 0:
             put_markdown("## Time remaining for joined contests:\n" + judge.remaining(settings, get(session, "username")))
@@ -359,6 +369,7 @@ def rem(session):
         else:
             toast("Please login to use this command", color = "error", onclick = functools.partial(login, session))
             clear(scope = "scope1")
+            clear(scope = "scope1-1")
 
 def export(session):
     if isBusy(session):
@@ -370,6 +381,7 @@ def export(session):
     with use_scope("scope1"):
         scroll_to(scope = "scope1")
         clear(scope = "scope1")
+        clear(scope = "scope1-1")
         put_markdown("## Export problem data")
 
         with use_scope("scope1-1"):
@@ -430,11 +442,11 @@ def account(session):
     with use_scope("scope1"):
         scroll_to(scope = "scope1")
         clear(scope = "scope1")
+        clear(scope = "scope1-1")
         put_markdown(open("web_oj_documentation.md", "r").read())
 
 def register():
     set_env(title = "Discord Bot Online Judge")
-    put_scope("site-top")
     with use_scope("top-bar"):
         put_html(open("nav-bar.html").read())
         put_markdown("# Welcome to the Discord Bot Online Judge web interface!")
@@ -465,8 +477,8 @@ def register():
 
         with use_scope("scope2"):
             clear(scope = "scope1")
+            clear(scope = "scope1-1")
             put_markdown("**Not logged in**")
-        scroll_to(scope = "site-top")
     except Exception as e:
         toast("An error occurred. Please make sure your input is valid. Please reload to try again or contact me.", color = "error")
         exc_type, exc_obj, exc_tb = sys.exc_info()
