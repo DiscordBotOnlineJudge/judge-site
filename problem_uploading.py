@@ -42,7 +42,7 @@ def uploadProblem(settings, storage_client, author):
     if not author in authors:
         authors.append(author)
 
-    settings.insert_one({"type":"problem", "name":params['name'], "authors":authors, "points":params['difficulty'], "status":"s", "published":params['private'] == 0, "contest":contest})
+    settings.insert_one({"type":"problem", "name":params['name'], "authors":authors, "points":params['difficulty'], "status":"s", "types":params['types'], "published":params['private'] == 0, "contest":contest})
 
     batches = params['batches']
     for x in range(1, len(batches) + 1):
