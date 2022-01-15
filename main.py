@@ -376,7 +376,7 @@ def export(session):
                 set(session, "busy", False)
                 return
 
-            f = file_upload("Please upload the zip file with all the problem data. Refer to the documentation for formatting", accept=".zip")
+            f = file_upload("Please upload the zip file with all the problem data. Refer to the documentation for formatting", accept=".zip", max_size='300M')
             open('data.zip', 'wb').write(f['content'])
 
             put_markdown("Status: **Uploading problem data**")
