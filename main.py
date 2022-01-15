@@ -361,6 +361,7 @@ def export(session):
         return
     set(session, "busy", True)
     set_env(title = "Export/Upload problem data")
+    os.system("rm data.zip && rm -r problemdata")
     with use_scope("scope1"):
         scroll_to(scope = "scope1")
 
