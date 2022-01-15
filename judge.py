@@ -244,12 +244,12 @@ def judgeSubmission(settings, username, problem, lang, cleaned):
                             time.sleep(1)
 
                     finalscore = return_dict['finalscore']
-
-                    scroll_to(position = "bottom")
+                    
                     output = settings.find_one({"_id":judges['_id']})['output'].replace("diff", "").replace("`", "").replace("+ ", "  ").replace("- ", "  ")
                     clear(scope = "scope1-1")
                     put_markdown("**Grading complete. See execution results below:**", scope = "scope1-1")
                     put_markdown("```diff\n" + output + "\n```", scope = "scope1-1")
+                    scroll_to(position = "bottom")
 
         if len(problm['contest']) > 0 and finalscore >= 0:
             updateScore(settings, problm['contest'], problem, username, finalscore, ct)
