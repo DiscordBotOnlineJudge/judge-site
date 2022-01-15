@@ -22,7 +22,7 @@ def uploadProblem(settings, storage_client, author):
 
     if not existingProblem is None:
         if (not author in existingProblem['authors']):
-            clear(scope = "scope1")
+            clear(scope = "scope1-1")
             put_markdown("Status: **Error occurred**")
             put_markdown("Error: problem name `" + params["name"] + "` already exists under another author")
             return
@@ -80,6 +80,6 @@ def uploadProblem(settings, storage_client, author):
     except:
         pass
     
-    clear(scope = "scope1")
+    clear(scope = "scope1-1")
     put_markdown("Status: **Completed**")
     put_markdown("Successfully uploaded problem data as problem `" + params['name'] + "`")

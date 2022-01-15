@@ -1,6 +1,6 @@
 import pywebio
 from pywebio.input import input, FLOAT, file_upload, textarea, select, input_group, NUMBER
-from pywebio.output import put_text, put_html, put_markdown, put_table, put_file, scroll_to, put_button, use_scope, clear, toast, put_loading
+from pywebio.output import put_text, put_html, put_markdown, put_table, put_file, scroll_to, put_button, put_buttons, use_scope, clear, toast, put_loading
 from pywebio.session import set_env
 import pymongo
 import os
@@ -249,6 +249,11 @@ def run_submit(session):
     lang = select(options = op, label = "Select a language to submit in:")
 
     res = textarea('Paste your code into the editor below:', code=True)
+
+    with use_scope("scope1-1"):
+        scroll_to(scope = "scope1-1")
+        put_markdown("**Preparing for grading...**")
+        put_loading(shape = "border", color = "primary")
     judge.judgeSubmission(settings, get(session, "username"), problem, lang, res)
 
     set(session, "busy", False)
@@ -261,7 +266,6 @@ def login(session):
     set(session, "busy", True)
     set_env(title = "Log In")
     with use_scope("scope2"):
-        scroll_to(scope = "scope2")
         clear(scope = "scope1")
         pswd = input("Please enter your account password to login")
         user = None
@@ -366,41 +370,43 @@ def export(session):
     with use_scope("scope1"):
         scroll_to(scope = "scope1")
         clear(scope = "scope1")
+        put_markdown("## Export problem data")
 
-        if not isAdmin(session):
-            toast("Please log in with an admin account to upload problem data. Click here to log in.", duration = 5, onclick = functools.partial(login, session))
-            set(session, "busy", False)
-            return
-        
-        if len(get(session, "username")) > 0:
-            if settings.find_one({"type":"access", "mode":"admin", "name":"jiminycricket#2701"}) is None:
-                toast("Sorry, you do not have sufficient permissions to use this command. Please contact jiminycricket#2701 for problem setting permissions.")
+        with use_scope("scope1-1"):
+            if not isAdmin(session):
+                toast("Please log in with an admin account to upload problem data. Click here to log in.", duration = 5, onclick = functools.partial(login, session))
                 set(session, "busy", False)
                 return
+            
+            if len(get(session, "username")) > 0:
+                if settings.find_one({"type":"access", "mode":"admin", "name":"jiminycricket#2701"}) is None:
+                    toast("Sorry, you do not have sufficient permissions to use this command. Please contact jiminycricket#2701 for problem setting permissions.")
+                    set(session, "busy", False)
+                    return
 
-            try:
-                f = file_upload("Please upload the zip file with all the problem data. Refer to the documentation for formatting. (If the progress bar is stuck at 100%, please reload the page and try again)", accept=".zip", max_size='128M')
-                open('data.zip', 'wb').write(f['content'])
-            except:
-                put_markdown("Error occurred while uploading data file")
-                set(session, "busy", False)
-                return
-
-            put_markdown("Status: **Uploading problem data**")
-            with put_loading(shape = 'border', color = 'primary'):
                 try:
-                    problem_uploading.uploadProblem(settings, storage.Client(), get(session, "username"))
-                except Exception as e:
-                    exc_type, exc_obj, exc_tb = sys.exc_info()
-                    fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-                    print(exc_type, fname, exc_tb.tb_lineno)
-                    print(e)
-                    clear(scope = "scope1")
-                    put_markdown("Status: **Error occurred**")
-                    put_markdown("Error occurred while uploading problem data:\n```\n" + str(e) + "\n```")
-        else:
-            toast("Please login to use this command", color = "error", onclick = functools.partial(login, session))
-            clear(scope = "scope1")
+                    f = file_upload("Please upload the zip file with all the problem data. Refer to the documentation for formatting. (If the progress bar is stuck at 100%, please reload the page and try again)", accept=".zip", max_size='128M')
+                    open('data.zip', 'wb').write(f['content'])
+                except:
+                    put_markdown("Error occurred while uploading data file")
+                    set(session, "busy", False)
+                    return
+
+                put_markdown("Status: **Uploading problem data**")
+                with put_loading(shape = 'border', color = 'primary'):
+                    try:
+                        problem_uploading.uploadProblem(settings, storage.Client(), get(session, "username"))
+                    except Exception as e:
+                        exc_type, exc_obj, exc_tb = sys.exc_info()
+                        fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+                        print(exc_type, fname, exc_tb.tb_lineno)
+                        print(e)
+                        clear(scope = "scope1-1")
+                        put_markdown("Status: **Error occurred**")
+                        put_markdown("Error occurred while uploading problem data:\n```\n" + str(e) + "\n```")
+            else:
+                toast("Please login to use this command", color = "error", onclick = functools.partial(login, session))
+                clear(scope = "scope1-1")
     set(session, "busy", False)
     os.system("rm data.zip && rm -r problemdata")
         
@@ -431,7 +437,7 @@ def register():
     with use_scope("top-bar"):
         put_html(open("nav-bar.html").read())
         put_markdown("# Welcome to the Discord Bot Online Judge web interface!")
-
+    scroll_to(position = "top")
     try:
         if not "session" in os.environ:
             os.environ['session'] = '1'
@@ -440,23 +446,22 @@ def register():
         session = getSession()
 
         print("Starting session", getSession())
-        put_markdown("### Problem setting")
-        put_button("Problem/Contest setting documentation", onclick = functools.partial(info, session), outline = True)
-        put_button("Upload problem data", onclick = functools.partial(export, session), outline = True)
+        put_markdown("### Problem/contest setting")
+        put_buttons(["Problem/Contest setting documentation", "Upload problem data", "Set up a new contest"], onclick = [functools.partial(info, session), functools.partial(export, session), functools.partial(contest, session)], outline = True)
         
         put_markdown("### General info")
-        put_button("Language Info", onclick = functools.partial(lang, session), outline = True)
-        put_button("View contest rankings", onclick = functools.partial(rank, session), outline = True)
-        put_button("Set up a new contest", onclick = functools.partial(contest, session), outline = True)
-        put_button("View all problems", onclick = functools.partial(view_problems, session), outline = True)
-        put_button("About page", onclick = functools.partial(about, session), outline = True)
+        info_names = ["Language Info", "View contest rankings", "View all problems", "About page"]
+        info_fns = [functools.partial(lang, session), functools.partial(rank, session), functools.partial(view_problems, session), functools.partial(about, session)]
+        put_buttons(info_names, onclick = info_fns, outline = True)
 
         put_markdown("### Web online judge")
-        put_button("Creating an account", onclick = functools.partial(account, session), outline = True)
-        put_button("Log In", onclick = functools.partial(login, session), outline = True)
-        put_button("Open/submit to a problem", onclick = functools.partial(view_problem, session), outline = True)
-        put_button("Join a contest", onclick = functools.partial(join, session), outline = True)
-        put_button("See remaining time on contest window", onclick = functools.partial(rem, session), outline = True)
+        login_names = ["Log In", "Creating an account"]
+        login_fns = [functools.partial(login, session), functools.partial(account, session)]
+        put_buttons(login_names, onclick = login_fns, outline = True)
+
+        oj_names = ["Open/submit to a problem", "Join a contest", "See remaining time on contest window"]
+        oj_fns = [functools.partial(view_problem, session), functools.partial(join, session), functools.partial(rem, session)]
+        put_buttons(oj_names, onclick = oj_fns, outline = True)
 
         with use_scope("scope2"):
             clear(scope = "scope1")

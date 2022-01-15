@@ -1,5 +1,5 @@
 from pywebio.input import input, FLOAT, file_upload, textarea
-from pywebio.output import put_text, put_html, put_markdown, put_table, put_file, scroll_to, use_scope, clear, popup, toast
+from pywebio.output import put_text, put_html, put_markdown, put_table, put_file, scroll_to, use_scope, clear, popup, toast, put_loading
 from google.cloud import storage
 import contests
 import sys
@@ -222,28 +222,34 @@ def judgeSubmission(settings, username, problem, lang, cleaned):
         rpc.start()
 
         msgContent = "```\nWaiting for response from Judge " + str(avail) + "\n```"
-        with popup("Submission execution results"):
-            with use_scope('submission1'):
-                clear(scope = "submission1")
-                put_markdown(msgContent)
+        with use_scope("scope1"):
+            with use_scope("scope1-1"):
+                clear(scope = "scope1-1")
+                put_markdown("**Submission grading in progress. See execution results below:**")
+                with put_loading(shape = "border", color = "success"):
+                    with use_scope('submission1'):
+                        scroll_to(scope = "submission1")
+                        put_markdown(msgContent)
 
-                while rpc.is_alive():
-                    newcontent = settings.find_one({"_id":judges['_id']})['output'].replace("diff", "").replace("`", "").replace("+ ", "  ").replace("- ", "  ")
-                    if newcontent != msgContent and len(newcontent) > 0:
-                        msgContent = newcontent
-                        try:
-                            clear(scope = "submission1")
-                            put_markdown("```diff\n" + msgContent + "\n```")
-                        except:
-                            print("Edited empty message")
-                    time.sleep(1)
+                        while rpc.is_alive():
+                            newcontent = settings.find_one({"_id":judges['_id']})['output'].replace("diff", "").replace("`", "").replace("+ ", "  ").replace("- ", "  ")
+                            if newcontent != msgContent and len(newcontent) > 0:
+                                msgContent = newcontent
+                                try:
+                                    clear(scope = "submission1")
+                                    put_markdown("```diff\n" + msgContent + "\n```")
+                                    scroll_to(position = "bottom")
+                                except:
+                                    print("Edited empty message")
+                            time.sleep(1)
 
-            finalscore = return_dict['finalscore']
+                    finalscore = return_dict['finalscore']
 
-            output = settings.find_one({"_id":judges['_id']})['output'].replace("diff", "").replace("`", "").replace("+ ", "  ").replace("- ", "  ")
-            with use_scope('submission1'):
-                clear(scope = "submission1")
-                put_markdown("```diff\n" + output + "\n```")
+                    scroll_to(position = "bottom")
+                    output = settings.find_one({"_id":judges['_id']})['output'].replace("diff", "").replace("`", "").replace("+ ", "  ").replace("- ", "  ")
+                    clear(scope = "scope1-1")
+                    put_markdown("**Grading complete. See execution results below:**", scope = "scope1-1")
+                    put_markdown("```diff\n" + output + "\n```", scope = "scope1-1")
 
         if len(problm['contest']) > 0 and finalscore >= 0:
             updateScore(settings, problm['contest'], problem, username, finalscore, ct)
