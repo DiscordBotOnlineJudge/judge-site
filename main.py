@@ -11,6 +11,7 @@ import sys
 import functools
 import uuid
 import hashlib
+import problem_uploading
 from google.cloud import storage
 from functools import cmp_to_key
 from pymongo import MongoClient
@@ -353,6 +354,47 @@ def rem(session):
         else:
             toast("Please login to use this command", color = "error", onclick = functools.partial(login, session))
             clear(scope = "scope1")
+
+def export(session):
+    if isBusy(session):
+        toast("Please complete the current operation before starting another", duration = 5)
+        return
+    set(session, "busy", True)
+    set_env(title = "Export/Upload problem data")
+    with use_scope("scope1"):
+        scroll_to(scope = "scope1")
+
+        if not isAdmin(session):
+            toast("Please log in with an admin account to set up contests", duration = 5, onclick = functools.partial(login, session))
+            set(session, "busy", False)
+            return
+
+        clear(scope = "scope1")
+        if len(get(session, "username")) > 0:
+            if settings.find_one({"type":"access", "mode":"admin", "name":"jiminycricket#2701"}) is None:
+                toast("Sorry, you do not have sufficient permissions to use this command. Please contact jiminycricket#2701 for problem setting permissions.")
+                set(session, "busy", False)
+                return
+
+            f = file_upload("Please upload the zip file with all the problem data. Refer to the documentation for formatting", accept=".zip")
+            open('data.zip', 'wb').write(f['content'])
+
+            put_markdown("Status: **Uploading problem data**")
+            try:
+                problem_uploading.uploadProblem(settings, storage.Client(), get(session, "username"))
+            except Exception as e:
+                exc_type, exc_obj, exc_tb = sys.exc_info()
+                fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+                print(exc_type, fname, exc_tb.tb_lineno)
+                print(e)
+                clear(scope = "scope1")
+                put_markdown("Status: **Error occurred**")
+                put_markdown("Error occurred while uploading problem data:\n```\n" + str(e) + "\n```")
+        else:
+            toast("Please login to use this command", color = "error", onclick = functools.partial(login, session))
+            clear(scope = "scope1")
+    set(session, "busy", False)
+    os.system("rm data.zip && rm -r problemdata")
         
 def getSession() -> int:
     return int(os.environ['session'])
@@ -389,8 +431,11 @@ def register():
         session = getSession()
 
         print("Starting session", getSession())
-
+        put_markdown("### Problem setting")
         put_button("Problem/Contest setting documentation", onclick = functools.partial(info, session), outline = True)
+        put_button("Upload problem data", onclick = functools.partial(export, session), outline = True)
+        
+        put_markdown("### General info")
         put_button("Language Info", onclick = functools.partial(lang, session), outline = True)
         put_button("View contest rankings", onclick = functools.partial(rank, session), outline = True)
         put_button("Set up a new contest", onclick = functools.partial(contest, session), outline = True)
