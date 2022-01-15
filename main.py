@@ -121,7 +121,7 @@ def contest(session):
 
         put_markdown("## Setting up a contest")
         if not isAdmin(session):
-            toast("Please log in with an admin account to set up contests", duration = 5, onclick = functools.partial(login, session))
+            toast("Please log in with an admin account to set up contests. Click here to log in.", duration = 5, onclick = functools.partial(login, session))
             set(session, "busy", False)
             return
 
@@ -364,13 +364,13 @@ def export(session):
     os.system("rm data.zip && rm -r problemdata")
     with use_scope("scope1"):
         scroll_to(scope = "scope1")
+        clear(scope = "scope1")
 
         if not isAdmin(session):
-            toast("Please log in with an admin account to set up contests", duration = 5, onclick = functools.partial(login, session))
+            toast("Please log in with an admin account to upload problem data. Click here to log in.", duration = 5, onclick = functools.partial(login, session))
             set(session, "busy", False)
             return
-
-        clear(scope = "scope1")
+        
         if len(get(session, "username")) > 0:
             if settings.find_one({"type":"access", "mode":"admin", "name":"jiminycricket#2701"}) is None:
                 toast("Sorry, you do not have sufficient permissions to use this command. Please contact jiminycricket#2701 for problem setting permissions.")
