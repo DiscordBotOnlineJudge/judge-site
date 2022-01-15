@@ -75,8 +75,8 @@ def lang(session):
         toast("Please complete the current operation before starting another", duration = 5)
         return
     set_env(title = "DBOJ language info")
-    scroll_to(scope = "scope1")
     with use_scope("scope1"):
+        scroll_to(scope = "scope1")
         clear(scope = "scope1")
         data = [["Language", "Compilation", "Execution"]]
         g = settings.find({"type":"lang"})
@@ -91,8 +91,8 @@ def info(session):
         toast("Please complete the current operation before starting another", duration = 5)
         return
     set_env(title = "DBOJ Documentation")
-    scroll_to(scope = "scope1")
     with use_scope("scope1"):
+        scroll_to(scope = "scope1")
         clear(scope = "scope1")
         put_markdown(open("problem_setting.md", "r").read())
 
@@ -115,8 +115,8 @@ def contest(session):
         return
     set(session, "busy", True)
     set_env(title = "Setting up new contest")
-    scroll_to(scope = "scope1")
     with use_scope("scope1"):
+        scroll_to(scope = "scope1")
         clear(scope = "scope1")
 
         put_markdown("## Setting up a contest")
@@ -159,9 +159,9 @@ def view_problems(session):
         toast("Please complete the current operation before starting another", duration = 5)
         return
     set_env(title = "View all problems")
-    scroll_to(scope = "scope1")
     set(session, "pp", False)
     with use_scope("scope1"):
+        scroll_to(scope = "scope1")
         clear(scope = "scope1")
         arr = sorted([(x['name'], x['points'], x['types'], x['authors']) for x in settings.find({"type":"problem", "published":True})], key = cmp_to_key(cmpProblem))
         data = [
@@ -179,8 +179,8 @@ def about(session):
         toast("Please complete the current operation before starting another", duration = 5)
         return
     set_env(title = "About DBOJ")
-    scroll_to(scope = "scope1")
     with use_scope("scope1"):
+        scroll_to(scope = "scope1")
         clear(scope = "scope1")
         put_markdown(open("about.md", "r").read())
 
@@ -195,9 +195,9 @@ def view_problem(session):
         clear(scope = "scope1")
         return
     set_env(title = "View problem")
-    scroll_to(scope = "scope1")
     set(session, "busy", True)
     with use_scope("scope1"):
+        scroll_to(scope = "scope1")
         clear(scope = "scope1")
         name = input("Enter the problem to open:")
         set_env(title = ("View problem " + name))
@@ -259,8 +259,8 @@ def login(session):
         return
     set(session, "busy", True)
     set_env(title = "Log In")
-    scroll_to(scope = "scope1")
     with use_scope("scope2"):
+        scroll_to(scope = "scope2")
         clear(scope = "scope1")
         pswd = input("Please enter your account password to login")
         user = None
@@ -288,10 +288,10 @@ def join(session):
         return
     set_env(title = "Joining a contest")
     set(session, "busy", True)
-    scroll_to(scope = "scope1")
+    
     with use_scope("scope1"):
         clear(scope = "scope1")
-
+        scroll_to(scope = "scope1")
         put_markdown("## Joining a contest")
         op = [x['name'] for x in settings.find({"type":"contest"})]
         name = select(options = op, label = "Select a contest to join:")
@@ -312,9 +312,9 @@ def rank(session):
         return
     set_env(title = "Contest rankings")
     set(session, "busy", True)
-    scroll_to(scope = "scope1")
     try:
         with use_scope("scope1"):
+            scroll_to(scope = "scope1")
             clear(scope = "scope1")
             put_markdown("## View contest rankings:")
             op = [x['name'] for x in settings.find({"type":"contest"})]
@@ -345,9 +345,9 @@ def rem(session):
         toast("Please complete the current operation before starting another", duration = 5)
         return
     set_env(title = "Remaining contest window time")
-    scroll_to(scope = "scope1")
     with use_scope("scope1"):
         clear(scope = "scope1")
+        scroll_to(scope = "scope1")
         if len(get(session, "username")) > 0:
             put_markdown("## Time remaining for joined contests:\n" + judge.remaining(settings, get(session, "username")))
             put_button("Refresh", onclick = functools.partial(rem, session), outline = True)
@@ -415,6 +415,7 @@ def account(session):
         return
     set_env(title = "Creating an account")
     with use_scope("scope1"):
+        scroll_to(scope = "scope1")
         clear(scope = "scope1")
         put_markdown(open("web_oj_documentation.md", "r").read())
 
