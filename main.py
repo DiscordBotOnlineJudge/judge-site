@@ -377,8 +377,13 @@ def export(session):
                 set(session, "busy", False)
                 return
 
-            f = file_upload("Please upload the zip file with all the problem data. Refer to the documentation for formatting", accept=".zip", max_size='128M')
-            open('data.zip', 'wb').write(f['content'])
+            try:
+                f = file_upload("Please upload the zip file with all the problem data. Refer to the documentation for formatting", accept=".zip", max_size='128M')
+                open('data.zip', 'wb').write(f['content'])
+            except:
+                put_markdown("Error occurred while uploading data file")
+                set(session, "busy", False)
+                return
 
             put_markdown("Status: **Uploading problem data**")
             try:
