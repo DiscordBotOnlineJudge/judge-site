@@ -2,7 +2,7 @@
 
 To set a problem on the judge, first ask me (`jiminycricket#2701`) to provide you with problem setting permissions (previous admins should already have the permissions). 
 
-**On the website:** Click the "Upload problem data" button above (under "Problem setting") and upload the zip file problem contents (format described below). Make sure to log in with your personal admin account.
+**On the website:** Click the "Upload problem data" button above (under "Problem setting") and upload the zip file problem contents (format described below). Make sure to log in with your personal admin account. *If the upload progress bar is stuck at 100% with no response, please reload the page and try again. It should work the second time.*
 
 **On the discord bot** (has an 8 MB upload size limit):
 Open a direct message channel with the judge bot (`Judge#5642`) or a secure private channel with the judge and upload a zip file with the problem data contents, along with the comment `-export` (HYPHEN export).
@@ -13,6 +13,7 @@ Open a direct message channel with the judge bot (`Judge#5642`) or a secure priv
 name: problemName
 authors: [author1, author2, ... , tester1, tester2, ...]
 difficulty: numberOfPoints
+types: [problemType1, problemType2, ...] (e.g. "Implementation", "Graph Theory")
 timelimit: [timeLimitPython, timeLimitJava, timeLimitC++]
 batches: [casesInBatch1, casesInBatch2, ...]
 points: [pointsForBatch1, pointsForBatch2, ...]
