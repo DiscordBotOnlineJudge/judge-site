@@ -254,7 +254,7 @@ def run_submit(session):
     op = [x['name'] for x in settings.find({"type":"lang"})]
     lang = select(options = op, label = "Select a language to submit in:")
 
-    res = textarea('Paste your code into the editor below:', code=True)
+    res = textarea('Paste your code into the editor below:', code=True, rows = 23)
 
     with use_scope("scope1-1"):
         scroll_to(scope = "scope1-1")
