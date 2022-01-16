@@ -1,5 +1,5 @@
 import pywebio
-from pywebio.input import input, FLOAT, file_upload, textarea, select, input_group, NUMBER
+from pywebio.input import input, FLOAT, file_upload, textarea, select, input_group, NUMBER, PASSWORD
 from pywebio.output import put_text, put_html, put_markdown, put_table, put_file, scroll_to, put_button, put_buttons, use_scope, clear, toast, put_loading, put_scope
 from pywebio.session import set_env
 import pymongo
@@ -274,7 +274,7 @@ def login(session):
     with use_scope("scope2"):
         clear(scope = "scope1")
         clear(scope = "scope1-1")
-        pswd = input("Please enter your account password to login")
+        pswd = input("Please enter your account password to login", type=PASSWORD)
         user = None
         for x in settings.find({"type":"account"}):
             if check_equal(x['pswd'], pswd):
