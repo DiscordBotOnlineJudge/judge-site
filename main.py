@@ -104,7 +104,7 @@ def checkDate(date):
 
 def check(data):
     for key in data:
-        if len(data[key]) == 0:
+        if len(str(data[key])) == 0:
             return (key, "This field cannot be blank")
     
     name = data['name']
