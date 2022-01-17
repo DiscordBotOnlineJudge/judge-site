@@ -12,6 +12,7 @@ import functools
 import uuid
 import hashlib
 import problem_uploading
+import contests
 from google.cloud import storage
 from functools import cmp_to_key
 from pymongo import MongoClient
@@ -315,6 +316,7 @@ def join(session):
             set(session, "busy", False)
             return
 
+        judge.instructions(name)
         put_button("Join contest and start my window countdown!", onclick = functools.partial(joinContest, session, name), outline = True)
     set(session, "busy", False)
 

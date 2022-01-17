@@ -125,14 +125,11 @@ def getScoreboard(settings, contest):
 
 def joinContest(settings, contest, user):
     cont = settings.find_one({"type":"contest", "name":contest})
-    if cont is None:
-        put_text("Error: Contest not found")
-        return False
     if (not contests.date(cont['start'], cont['end'], contests.current_time())):
-        put_text("This contest is not currently active.")
+        toast("This contest is not currently active.")
         return False
     if not settings.find_one({"type":"access", "mode":contest, "name":user}) is None:
-        put_text("You already joined this contest.")
+        toast("You already joined this contest.")
         return False
 
     solved = [0] * (cont['problems'] + 1)
