@@ -198,14 +198,14 @@ def view_problem(session):
     if len(get(session, "username")) == 0: # Test logged in
         toast("Please login to use this command", color = "error", onclick = functools.partial(login, session))
         set(session, "busy", False)
-        clear(scope = "scope1")
-        clear(scope = "scope1-1")
         return
     set_env(title = "View problem")
     set(session, "busy", True)
+    
     with use_scope("scope1"):
         scroll_to(scope = "scope1")
         clear(scope = "scope1")
+        clear(scope = "scope1-1")
         name = input("Enter the problem to open:")
         set_env(title = ("View problem " + name))
         problemInterface(session, settings, name, get(session, "username"))
