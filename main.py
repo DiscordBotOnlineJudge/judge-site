@@ -144,7 +144,6 @@ def contest(session):
             f.flush()
             f.close()
 
-        data['type'] = 'contest'
         name = data['name']
         
         stc = storage.Client()
@@ -152,7 +151,7 @@ def contest(session):
         blob = bucket.blob("ContestInstructions/" + name + ".txt")
         blob.upload_from_filename("instructions.txt")
 
-        settings.insert_one(data)
+        settings.insert_one({"type":"contest", "name":data['name'], "start":data['start'], "end":data['end'], "problems":data['problems'], "len":data['len']})
 
         put_markdown("Successfully created contest `" + str(name) + "`! You may now close this page.")
         toast("Success!", color = "success")
