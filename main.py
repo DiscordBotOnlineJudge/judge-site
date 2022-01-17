@@ -315,10 +315,11 @@ def join(session):
             set(session, "busy", False)
             return
 
-        if not judge.joinContest(settings, name, get(session, "username")):
-            set(session, "busy", False)
-            return
+        put_button("Join contest and start my window countdown!", onclick = functools.partial(joinContest, session, name), outline = True)
     set(session, "busy", False)
+
+def joinContest(session, name):
+    judge.joinContest(settings, name, get(session, "username"))
 
 def rank(session):
     if isBusy(session):
