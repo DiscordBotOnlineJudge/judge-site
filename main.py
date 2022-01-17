@@ -135,6 +135,7 @@ def contest(session):
             input("Enter the contest end time in the format YYYY MM DD HH MM SS (24-hour time):", name="end"),
             input("Enter the number of problems in the contest:", name="problems", type=NUMBER),
             input("How long should the participant window be (in seconds): ", name="len", type=NUMBER),
+            select(options = ["Submission penalty", "Time bonus"], label = "What type of tie-breaker should the contest have?", name="breaker"),
             textarea("Paste the contest instructions here (will be shown as a user starts a contest)", name="instructions")
         ], validate = check)
 
@@ -151,7 +152,7 @@ def contest(session):
         blob = bucket.blob("ContestInstructions/" + name + ".txt")
         blob.upload_from_filename("instructions.txt")
 
-        settings.insert_one({"type":"contest", "name":data['name'], "start":data['start'], "end":data['end'], "problems":data['problems'], "len":data['len']})
+        settings.insert_one({"type":"contest", "name":data['name'], "start":data['start'], "end":data['end'], "problems":data['problems'], "len":data['len'], "has-penalty":data['breaker']=='Submission penalty', "has-time-bonus":data['breaker']=='Time bonus'})
 
         put_markdown("Successfully created contest `" + str(name) + "`! You may now close this page.")
         toast("Success!", color = "success")
