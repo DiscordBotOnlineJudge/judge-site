@@ -234,7 +234,7 @@ def problemInterface(session, settings, problem, user):
             put_markdown(open("problem.txt").read())
         except:
             put_markdown("Sorry, this problem does not yet have a problem statement.")
-
+        put_button("Submit solution", onclick = functools.partial(run_submit, session), outline = True)
         set(session, "problem", problem)
 
     except Exception as e:
