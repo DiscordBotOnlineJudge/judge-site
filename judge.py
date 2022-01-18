@@ -153,6 +153,7 @@ def joinContest(settings, contest, user):
     settings.insert_one({"type":"access", "mode":contest, "name":user, "solved":solved, "penalty":penalties, "time-bonus":time_bonus, "start":start, "taken":0})
     with use_scope("scope1"):
         put_markdown("Successfully joined contest `" + contest + "` as user `" + user + "`! You have " + amt(cont['len']) + " to complete the contest. Good Luck!\n")
+        toast("Successfully started contest countdown!", color = "success")
     put_timer(settings, user)
     return True
 
