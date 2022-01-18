@@ -287,6 +287,7 @@ def login(session):
             set(session, "username", user['name'])
             clear(scope = "scope2")
             put_markdown("**Logged in as `" + get(session, "username") + "`**")
+            judge.put_timer(settings, get(session, "username"))
     set(session, "busy", False)
 
 def join(session):
@@ -482,6 +483,7 @@ def register():
             clear(scope = "scope1")
             clear(scope = "scope1-1")
             put_markdown("**Not logged in**")
+        put_scope("timer")
     except Exception as e:
         toast("An error occurred. Please make sure your input is valid. Please reload to try again or contact me.", color = "error")
         exc_type, exc_obj, exc_tb = sys.exc_info()

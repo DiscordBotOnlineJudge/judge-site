@@ -123,6 +123,19 @@ def getScoreboard(settings, contest):
         
     return msg + "```"
 
+def put_timer(settings, user):
+    with use_scope("timer"):
+        clear(scope = "timer")
+        script = None
+        for x in settings.find({"type":"access", "name":user}):
+            if x['mode'] != "owner" and x['mode'] != "admin":
+                len = getLen(settings, x['mode'])
+                s = x['start'].split()
+                session = settings.find_one({"type":"timerCount"})['cnt']
+                settings.update_one({"type":"timerCount"}, {"$inc":{"cnt":1}})
+                script = open("countdown.html").read().replace("%year%", s[0]).replace("%month%", s[1]).replace("%day%", s[2]).replace("%hh%", s[3]).replace("%mm%", s[4]).replace("%ss%", s[5]).replace("%len%", str(len)).replace("%name%", x['mode']).replace("%session%", str(session))
+        if not script is None: put_html(script)
+
 def joinContest(settings, contest, user):
     cont = settings.find_one({"type":"contest", "name":contest})
     if (not contests.date(cont['start'], cont['end'], contests.current_time())):
@@ -136,10 +149,11 @@ def joinContest(settings, contest, user):
     penalties = [0] * (cont['problems'] + 1)
     time_bonus = [0] * (cont['problems'] + 1)
 
-    settings.insert_one({"type":"access", "mode":contest, "name":user, "solved":solved, "penalty":penalties, "time-bonus":time_bonus, "start":contests.current_time(), "taken":0})
+    start = contests.current_time()
+    settings.insert_one({"type":"access", "mode":contest, "name":user, "solved":solved, "penalty":penalties, "time-bonus":time_bonus, "start":start, "taken":0})
     with use_scope("scope1"):
         put_markdown("Successfully joined contest `" + contest + "` as user `" + user + "`! You have " + amt(cont['len']) + " to complete the contest. Good Luck!\n")
-
+    put_timer(settings, user)
     return True
 
 def perms(settings, found, author):

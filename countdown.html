@@ -1,0 +1,26 @@
+<body>
+    <p id="timer%session%"></p>
+
+    <script>
+        var startDate = new Date("%month% %day% %year% %hh%:%mm%:%ss%").getTime();
+        var x = setInterval(function() {
+            var now = new Date().getTime();
+            var elapsed = now - startDate;
+            var lenMillis = %len% * 1000;
+            var distance = lenMillis - elapsed;
+            
+            var days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            var hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            var minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            var seconds = Math.floor((distance % (1000 * 60)) / 1000);
+            
+            if (distance < 0) {
+                clearInterval(x);
+                document.getElementById("timer%session%").innerHTML = "Time's Up! Your window on contest <b>%name%</b> has ended.";
+            }
+            else {
+                document.getElementById("timer%session%").innerHTML = "You have <b>" + days + " days, " + hours + " hours, " + minutes + " minutes, and " + seconds + " seconds</b> left on contest <b>%name%</b>.";
+            }
+        }, 1000);
+    </script>
+</body>
