@@ -267,6 +267,7 @@ def run_submit(session):
     ], cancelable = True, validate = check)
 
     if data is None:
+        set(session, "submit", False)
         set(session, "busy", False)
         return
 
