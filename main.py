@@ -105,10 +105,13 @@ def check(data):
         if len(str(data[key])) == 0:
             return (key, "This field cannot be blank")
     
-    name = data['name']
-    prev = settings.find_one({"type":"contest", "name":name})
-    if not prev is None:
-        return ("name", "An existing contest with the name \"" + name + "\" was found. If you would like to edit or delete this contest, please contact me.")
+    try:
+        name = data['name']
+        prev = settings.find_one({"type":"contest", "name":name})
+        if not prev is None:
+            return ("name", "An existing contest with the name \"" + name + "\" was found. If you would like to edit or delete this contest, please contact me.")
+    except:
+        pass
 
 def contest(session):
     if isBusy(session):
@@ -258,9 +261,17 @@ def run_submit(session):
     set(session, "busy", True)
     
     op = [x['name'] for x in settings.find({"type":"lang"})]
-    lang = select(options = op, label = "Select a language to submit in:")
+    data = input_group("Submit to " + problem, [
+        select(options = op, label = "Select a language to submit in:", name = "lang"),
+        textarea('Paste your code into the editor below:', code=True, rows = 12, name = "code")
+    ], cancelable = True, validate = check)
 
-    res = textarea('Paste your code into the editor below:', code=True, rows = 23)
+    if data is None:
+        set(session, "busy", False)
+        return
+
+    lang = data['lang']
+    res = data['code']
 
     with use_scope("scope1-1"):
         scroll_to(scope = "scope1-1")
