@@ -200,9 +200,8 @@ def view_problems(session):
         for x in arr:
             data.append([put_button(x[0], outline = True, link_style=True, onclick = functools.partial(problemInterface, session, settings, x[0], get(session, "username"))), x[1], ", ".join(x[2]), ", ".join(x[3])])
         put_markdown("## All published problems on the judge:")
-        put_button("View private problems", onclick = functools.partial(private_problems, session), outline = False)
         put_table(data)
-        put_button("View private problems", onclick = functools.partial(private_problems, session), outline = False)
+        put_button("View private problems", onclick = functools.partial(private_problems, session), outline = True)
     set(session, "busy", False)
 
 def about(session):
