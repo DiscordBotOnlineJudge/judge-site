@@ -58,7 +58,6 @@ def private_problems(session):
     set(session, "pp", True)
     with use_scope("scope1"):
         with put_loading(shape = 'border', color = 'primary'):
-            put_markdown("Compiling private problems...")
             arr = []
             for x in settings.find({"type":"problem", "published":False}):
                 if not judge.perms(settings, x, get(session, "username")):
@@ -68,7 +67,7 @@ def private_problems(session):
                 ['Problem Name', 'Points/Difficulty', 'Contest', 'Problem Types', 'Authors'],
             ]
             for x in arr:
-                data.append([x[0], x[1], x[2], ", ".join(x[3]), ", ".join(x[4])])
+                data.append([put_button(x[0], outline = True, link_style = True, onclick = functools.partial(problemInterface, session, settings, x[0], get(session, "username"))), x[1], x[2], ", ".join(x[3]), ", ".join(x[4])])
         put_markdown("## Private problems visible to you:")
         put_table(data)
         scroll_to(position = "bottom")
@@ -164,26 +163,47 @@ def contest(session):
         toast("Success!", color = "success")
     set(session, "busy", False)
 
+def contestProblems(session):
+    user = get(session, "username")
+    
+    for contest in settings.find({"type":"access", "name":user}):
+        if contest['mode'] == 'admin' or contest['mode'] == 'owner': continue
+        arr = []
+        for problem in settings.find({"type":"problem", "contest":contest['mode']}):
+            if not judge.perms(settings, problem, get(session, "username")):
+                arr.append(problem['name'])
+        arr.sort()
+        data = [
+            ['Problem Name']
+        ]
+        for x in arr:
+            data.append([put_button(x, outline = True, link_style=True, onclick = functools.partial(problemInterface, session, settings, x, get(session, "username")))])
+        put_markdown("## Contest problems for `" + contest['mode'] + "`")
+        put_table(data)
+
 def view_problems(session):
     if isBusy(session):
         toast("Please complete the current operation before starting another", duration = 5)
         return
+    set(session, "busy", True)
     set_env(title = "View all problems")
     set(session, "pp", False)
     with use_scope("scope1"):
         scroll_to(scope = "scope1")
         clear(scope = "scope1")
         clear(scope = "scope1-1")
+        contestProblems(session)
         arr = sorted([(x['name'], x['points'], x['types'], x['authors']) for x in settings.find({"type":"problem", "published":True})], key = cmp_to_key(cmpProblem))
         data = [
             ['Problem Name', 'Points/Difficulty', 'Problem Types', 'Authors'],
         ]
         for x in arr:
-            data.append([x[0], x[1], ", ".join(x[2]), ", ".join(x[3])])
+            data.append([put_button(x[0], outline = True, link_style=True, onclick = functools.partial(problemInterface, session, settings, x[0], get(session, "username"))), x[1], ", ".join(x[2]), ", ".join(x[3])])
         put_markdown("## All published problems on the judge:")
+        put_button("View private problems", onclick = functools.partial(private_problems, session), outline = False)
         put_table(data)
-
-        put_button("View private problems", onclick = functools.partial(private_problems, session), outline = True)
+        put_button("View private problems", onclick = functools.partial(private_problems, session), outline = False)
+    set(session, "busy", False)
 
 def about(session):
     if isBusy(session):
@@ -217,34 +237,42 @@ def view_problem(session):
             set(session, "busy", False)
             return
         name = data['problemName']
-        set_env(title = ("View problem " + name))
         problemInterface(session, settings, name, get(session, "username"))
         
     set(session, "busy", False)
 
 def problemInterface(session, settings, problem, user):
+    if isBusy(session):
+        toast("One sec, we're still compiling problems")
+        return
     try:
-        sc = storage.Client()
-        bucket = sc.get_bucket("discord-bot-oj-file-storage")
-        file = bucket.blob("ProblemStatements/" + problem + ".txt")
+        with use_scope("scope1-1"):
+            clear(scope = "scope1")
+            clear(scope = "scope1-1")
+            scroll_to(scope = "scope1-1")
 
-        found = settings.find_one({"type":"problem", "name":problem})
-        if found is None:
-            toast("Error: Problem not found", color = "error")
-            return
-        if judge.perms(settings, found, user):
-            toast("Error: Problem not found", color = "error")
-            return
-        
-        put_markdown("### Problem statement for problem `" + problem + "`")
-        put_button("Submit solution", onclick = functools.partial(run_submit, session), outline = True)
-        try:
-            file.download_to_filename("problem.txt")
-            put_markdown(open("problem.txt").read())
-        except:
-            put_markdown("Sorry, this problem does not yet have a problem statement.")
-        put_button("Submit solution", onclick = functools.partial(run_submit, session), outline = True)
-        set(session, "problem", problem)
+            set_env(title = ("View problem " + problem))
+            sc = storage.Client()
+            bucket = sc.get_bucket("discord-bot-oj-file-storage")
+            file = bucket.blob("ProblemStatements/" + problem + ".txt")
+
+            found = settings.find_one({"type":"problem", "name":problem})
+            if found is None:
+                toast("Error: Problem not found", color = "error")
+                return
+            if judge.perms(settings, found, user):
+                toast("Error: Problem not found", color = "error")
+                return
+            
+            put_markdown("### Problem statement for problem `" + problem + "`")
+            put_button("Submit solution", onclick = functools.partial(run_submit, session), outline = True)
+            try:
+                file.download_to_filename("problem.txt")
+                put_markdown(open("problem.txt").read())
+            except:
+                put_markdown("Sorry, this problem does not yet have a problem statement.")
+            put_button("Submit solution", onclick = functools.partial(run_submit, session), outline = True)
+            set(session, "problem", problem)
 
     except Exception as e:
         toast("An error occurred. Please make sure your input is valid. Please reload to try again or contact me.", color = "error")
@@ -254,6 +282,11 @@ def problemInterface(session, settings, problem, user):
         print(e)
 
 def run_submit(session):
+    if len(get(session, "username")) == 0: # Test logged in
+        toast("Please login to submit solutions", onclick = functools.partial(login, session))
+        set(session, "busy", False)
+        return
+
     if get(session, "submit"):
         return
     set(session, "submit", True)
@@ -498,8 +531,8 @@ def register():
         put_buttons(["Problem/Contest setting documentation", "Upload problem data", "Set up a new contest"], onclick = [functools.partial(info, session), functools.partial(export, session), functools.partial(contest, session)], outline = True)
         
         put_markdown("### General info")
-        info_names = ["Language Info", "View contest rankings", "View all problems", "About page"]
-        info_fns = [functools.partial(lang, session), functools.partial(rank, session), functools.partial(view_problems, session), functools.partial(about, session)]
+        info_names = ["Language Info", "View contest rankings", "About page"]
+        info_fns = [functools.partial(lang, session), functools.partial(rank, session), functools.partial(about, session)]
         put_buttons(info_names, onclick = info_fns, outline = True)
 
         put_markdown("### Web online judge")
@@ -507,8 +540,8 @@ def register():
         login_fns = [functools.partial(login, session), functools.partial(account, session)]
         put_buttons(login_names, onclick = login_fns, outline = True)
 
-        oj_names = ["Open/submit to a problem", "Join a contest", "See remaining time on contest window"]
-        oj_fns = [functools.partial(view_problem, session), functools.partial(join, session), functools.partial(rem, session)]
+        oj_names = ["View all problems", "Join a contest", "See remaining time on contest window"]
+        oj_fns = [functools.partial(view_problems, session), functools.partial(join, session), functools.partial(rem, session)]
         put_buttons(oj_names, onclick = oj_fns, outline = True)
 
         with use_scope("scope2"):
