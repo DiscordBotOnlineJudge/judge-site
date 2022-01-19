@@ -100,9 +100,6 @@ def info(session):
         clear(scope = "scope1-1")
         put_markdown(open("problem_setting.md", "r").read())
 
-def checkDate(date):
-    pass
-
 def check(data):
     for key in data:
         if len(str(data[key])) == 0:
@@ -138,7 +135,11 @@ def contest(session):
             input("How long should the participant window be (in seconds): ", name="len", type=NUMBER),
             select(options = ["Submission penalty", "Time bonus"], label = "What type of tie-breaker should the contest have?", name="breaker"),
             textarea("Paste the contest instructions here (will be shown as a user starts a contest)", name="instructions")
-        ], validate = check)
+        ], validate = check, cancelable = True)
+
+        if data is None:
+            set(session, "busy", False)
+            return
 
         inst = data['instructions']
         with open("instructions.txt", "w") as f:
@@ -207,7 +208,11 @@ def view_problem(session):
         scroll_to(scope = "scope1")
         clear(scope = "scope1")
         clear(scope = "scope1-1")
-        name = input("Enter the problem to open:")
+        data = input_group("Enter the problem to open:", [input(name = "problemName")], cancelable = True)
+        if data is None:
+            set(session, "busy", False)
+            return
+        name = data['problemName']
         set_env(title = ("View problem " + name))
         problemInterface(session, settings, name, get(session, "username"))
         
