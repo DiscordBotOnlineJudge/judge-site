@@ -333,7 +333,7 @@ def join(session):
         put_markdown("## Joining a contest")
         op = [x['name'] for x in settings.find({"type":"contest"})]
         
-        data = input_group("Select a contest to join:", [select(options = op, name = "contestName")], cancelable = True, validate = lambda d: ('contestName', 'Please choose a contest') if not d['contestName'] else None)
+        data = input_group("Select a contest to join:", [select(options = op, name = "contestName", help_text = "This does not start the contest. You will be provided with the instructions on the next screen.")], cancelable = True, validate = lambda d: ('contestName', 'Please choose a contest') if not d['contestName'] else None)
         if data is None:
             set(session, "busy", False)
             return
