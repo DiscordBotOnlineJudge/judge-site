@@ -208,7 +208,7 @@ def view_problem(session):
         scroll_to(scope = "scope1")
         clear(scope = "scope1")
         clear(scope = "scope1-1")
-        data = input_group("Enter the problem to open:", [input(name = "problemName")], cancelable = True)
+        data = input_group("Enter the problem to open:", [input(name = "problemName")], cancelable = True, validate = lambda d: ('problemName', 'Please enter a problem name') if not d['problemName'] else None)
         if data is None:
             set(session, "busy", False)
             return
@@ -280,7 +280,11 @@ def login(session):
     with use_scope("scope2"):
         clear(scope = "scope1")
         clear(scope = "scope1-1")
-        pswd = input("Please enter your account password to login", type=PASSWORD)
+        data = input_group("Please enter your account password to login", [input(type=PASSWORD, name = "pswd")], cancelable = True, validate = lambda d: ('pswd', 'Please enter a password') if not d['pswd'] else None)
+        if data is None:
+            set(session, "busy", False)
+            return
+        pswd = data['pswd']
         user = None
         for x in settings.find({"type":"account"}):
             if check_equal(x['pswd'], pswd):
@@ -315,7 +319,12 @@ def join(session):
         scroll_to(scope = "scope1")
         put_markdown("## Joining a contest")
         op = [x['name'] for x in settings.find({"type":"contest"})]
-        name = select(options = op, label = "Select a contest to join:")
+        
+        data = input_group("Select a contest to join:", [select(options = op, name = "contestName")], cancelable = True, validate = lambda d: ('contestName', 'Please choose a contest') if not d['contestName'] else None)
+        if data is None:
+            set(session, "busy", False)
+            return
+        name = data['contestName']
 
         if len(name) == 0:
             toast("No contest was selected")
@@ -342,7 +351,11 @@ def rank(session):
             clear(scope = "scope1-1")
             put_markdown("## View contest rankings:")
             op = [x['name'] for x in settings.find({"type":"contest"})]
-            contest = select(options = op, label = "Select a contest to view:")
+            data = input_group("Select a contest to view:", [select(options = op, name = "contestName")], cancelable = True, validate = lambda d: ('contestName', 'Please choose a contest') if not d['contestName'] else None)
+            if data is None:
+                set(session, "busy", False)
+                return
+            contest = data['contestName']
             set_env(title = ("Contest rankings for " + contest))
             put_markdown(judge.getScoreboard(settings, contest))
             put_button("Refresh", onclick = functools.partial(rank_specific, contest), outline = True)
@@ -386,7 +399,6 @@ def export(session):
         return
     set(session, "busy", True)
     set_env(title = "Export/Upload problem data")
-    os.system("rm data.zip && rm -r problemdata")
     with use_scope("scope1"):
         scroll_to(scope = "scope1")
         clear(scope = "scope1")
@@ -406,7 +418,8 @@ def export(session):
                     return
 
                 try:
-                    f = file_upload("Please upload the zip file with all the problem data. Refer to the documentation for formatting. (If the progress bar gets stuck at 100%, please reload the page and try again)", accept=".zip", max_size='128M')
+                    f = file_upload("Please upload the zip file with all the problem data. Refer to the documentation for formatting. (If the progress bar gets stuck at 100%, please reload the page and try again)", accept=".zip", max_size='128M', cancelable = True)
+                    os.system("rm data.zip && rm -r problemdata")
                     open('data.zip', 'wb').write(f['content'])
                 except:
                     put_markdown("Error occurred while uploading data file")
