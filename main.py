@@ -2,7 +2,6 @@ import pywebio
 from pywebio.input import input, FLOAT, file_upload, textarea, select, input_group, NUMBER, PASSWORD
 from pywebio.output import put_text, put_html, put_markdown, put_table, put_file, scroll_to, put_button, put_buttons, use_scope, clear, toast, put_loading, put_scope
 from pywebio.session import set_env
-from pywebio.session import info as session_info
 from pywebio import session as s
 import pymongo
 import os
@@ -514,7 +513,6 @@ def account(session):
         put_markdown(open("web_oj_documentation.md", "r").read())
 
 def register():
-    print(session_info.user_ip)
     set_env(title = "Discord Bot Online Judge")
     s.run_js("""$('footer').remove()""")
     with use_scope("top-bar"):
