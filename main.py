@@ -462,7 +462,7 @@ def export(session):
                     return
 
                 try:
-                    f = file_upload("Please upload the zip file with all the problem data. Refer to the documentation for formatting. (If the progress bar gets stuck at 100%, please reload the page and try again)", accept=".zip", max_size='128M', cancelable = True)
+                    f = file_upload("Please upload the zip file with all the problem data. Refer to the documentation for formatting", help_text = "If the progress bar gets stuck at 100%, please reload the page and try again. It should work the second time.", accept=".zip", max_size='128M', cancelable = True)
                     os.system("rm data.zip && rm -r problemdata")
                     open('data.zip', 'wb').write(f['content'])
                 except:
