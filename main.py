@@ -2,6 +2,7 @@ import pywebio
 from pywebio.input import input, FLOAT, file_upload, textarea, select, input_group, NUMBER, PASSWORD
 from pywebio.output import put_text, put_html, put_markdown, put_table, put_file, scroll_to, put_button, put_buttons, use_scope, clear, toast, put_loading, put_scope
 from pywebio.session import set_env
+from pywebio.session import info as session_info
 from pywebio import session as s
 import pymongo
 import os
@@ -245,10 +246,8 @@ def problemInterface(session, settings, problem, user):
         toast("One sec, we're still compiling problems")
         return
     try:
-        with use_scope("scope1-1"):
+        with use_scope("scope1"):
             clear(scope = "scope1")
-            clear(scope = "scope1-1")
-            scroll_to(scope = "scope1-1")
 
             set_env(title = ("View problem " + problem))
             sc = storage.Client()

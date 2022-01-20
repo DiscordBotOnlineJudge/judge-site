@@ -214,8 +214,7 @@ def judgeSubmission(settings, username, problem, lang, cleaned):
         judges = settings.find_one({"type":"judge", "status":0})
 
         if judges is None:
-            with popup("Judging error"):
-                put_markdown("All of the judge's grading servers are currently offline or in use. Please resubmit in a few seconds.")
+            toast("All of the judge's grading servers are currently offline or in use. Please resubmit in a few seconds.", color = "error")
             return
 
         settings.update_one({"_id":judges['_id']}, {"$set":{"status":1}})
