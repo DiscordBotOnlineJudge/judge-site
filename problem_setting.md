@@ -15,22 +15,20 @@ authors: [author1, author2, ... , tester1, tester2, ...]
 difficulty: numberOfPoints
 types: [problemType1, problemType2, ...] # (e.g. "Implementation", "Graph Theory")
 
-time-limit: {
-    general: [-> General time limit] ,
-    java: [-> Language-specific time limits (optional)] ,
-    python: ... ,
-    # ... (Important: Don't forget to separate with commas! State times in seconds)
-}
+time-limit:
+    general: [-> General time limit]
+    java: [-> Language-specific time limits (optional)]
+    python: ... 
+    # ... (State time limits in seconds)
 
-memory-limit: {
-    general: [-> General memory limit (in KB)] ,
-    java: [-> Language-specific memory limits (optional)] ,
-    # ...
-}
+memory-limit:
+    general: [-> General memory limit]
+    java: [-> Language-specific memory limits (optional)]
+    # ... (State memory limits in Kilo-Bytes (KB); 1024 KB = 1 MB)
 
 batches: [casesInBatch1, casesInBatch2, ...]
 points: [pointsForBatch1, pointsForBatch2, ...]
-private: 1 for true 0 for false
+private: # 1 for true, 0 for false
 contest: contestName  # [should only be set if "private" is true]
 ```
 
