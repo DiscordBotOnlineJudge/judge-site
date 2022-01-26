@@ -9,18 +9,30 @@ Open a direct message channel with the judge bot (`Judge#5642`) or a secure priv
 
 **The zip file contents should contain the following files:**
 1. A `params.yaml` file containing the following information:
-```
+```yaml
 name: problemName
 authors: [author1, author2, ... , tester1, tester2, ...]
 difficulty: numberOfPoints
-types: [problemType1, problemType2, ...] (e.g. "Implementation", "Graph Theory")
-timelimit: [timeLimitPython, timeLimitJava, timeLimitC++]
+types: [problemType1, problemType2, ...] # (e.g. "Implementation", "Graph Theory")
+
+time-limit: {
+    general: [-> General time limit] ,
+    java: [-> Language-specific time limits (optional)] ,
+    python: ... ,
+    # ... (Important: Don't forget to separate with commas! State times in seconds)
+}
+
+memory-limit: {
+    general: [-> General memory limit (in KB)] ,
+    java: [-> Language-specific memory limits (optional)] ,
+    # ...
+}
+
 batches: [casesInBatch1, casesInBatch2, ...]
 points: [pointsForBatch1, pointsForBatch2, ...]
 private: 1 for true 0 for false
-contest: contestName  [should only be set if "private" is true]
+contest: contestName  # [should only be set if "private" is true]
 ```
-(all problems have a memory limit of 256 MB)
 
 2. A problem statement description contained in the file `description.md`. You may write the statement using Discord message markdown. Bold, italics, code segments, and hyperlinks will be picked up.
 3. Testdata: Every test data file will start with `data`, followed by the batch number, followed by a `.`, followed by the case number, followed by either `.in` for an input file or `.out` for an output file. For example, `data3.2.out` is the output file for batch 3 case 2 of the testdata.
