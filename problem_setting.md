@@ -43,7 +43,7 @@ To host a contest:
 
 2. Add the contest instructions to the ContestInstructions folder saved to a text file with the name [contestName].txt. The contents of this file will be shown to the user upon joining the contest.
 
-3. Register the contest on the database using the `"c"` command on this web app
+3. Register the contest using the "Set up a new contest" button above (under "Problem/contest setting")
 
 4. Use the `-set [contest1] [contest2]...` command to set up live scoreboards.
 
