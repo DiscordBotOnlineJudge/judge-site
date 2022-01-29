@@ -1,4 +1,3 @@
-from turtle import onclick
 import pywebio
 from pywebio.input import input, FLOAT, file_upload, textarea, select, input_group, NUMBER, PASSWORD
 from pywebio.output import put_text, put_html, put_markdown, put_table, put_file, scroll_to, put_button, put_buttons, use_scope, clear, toast, put_loading, put_scope
@@ -56,7 +55,7 @@ def isAdmin(session):
 
 def private_problems(session):
     if len(get(session, "username")) == 0:
-        toast("Please login to view private problems", onclick = functools.partial(login, session))
+        toast("Please login to view private problems")
         return
     if get(session, "pp"):
         return
