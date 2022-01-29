@@ -127,9 +127,12 @@ def contest(session):
 
         put_markdown("## Setting up a contest")
         if not isAdmin(session):
-            toast("Please log in with an admin account to set up contests. Click here to log in.", duration = 5, onclick = functools.partial(login, session))
+            toast("Please login with an admin account")
             set(session, "busy", False)
-            return
+            login(session)
+            if len(get(session, "username")) == 0:
+                return
+            set(session, "busy", True)
 
         data = input_group("New Contest Info", [
             input('Enter the contest name:', name='name'),
@@ -347,65 +350,44 @@ def join(session):
     if isBusy(session):
         toast("Please complete the current operation before starting another", duration = 5)
         return
-
-    if len(get(session, "username")) == 0: # Test logged in
-        toast("Please login to use this command", color = "error", onclick = functools.partial(login, session))
-        set(session, "busy", False)
-        clear(scope = "scope1")
-        clear(scope = "scope1-1")
-        return
-    set_env(title = "Joining a contest")
-    set(session, "busy", True)
-    
+    set_env(title = "Contests")
     with use_scope("scope1"):
         clear(scope = "scope1")
         clear(scope = "scope1-1")
         scroll_to(scope = "scope1")
         put_markdown("## Joining a contest")
-        op = [x['name'] for x in settings.find({"type":"contest"})]
-        
-        data = input_group("Select a contest to join:", [select(options = op, name = "contestName", help_text = "This does not start the contest. You will be provided with the instructions on the next screen.")], cancelable = True, validate = lambda d: ('contestName', 'Please choose a contest') if not d['contestName'] else None)
-        if data is None:
-            set(session, "busy", False)
-            return
-        name = data['contestName']
+        t = [["Contest name", "Start date", "End date", ""]]
+        for x in settings.find({"type":"contest"}):
+            t.append([x['name'], x['start'], x['end'], put_buttons(['Rankings', 'Contest Page'], onclick = [functools.partial(rank, x['name']), functools.partial(viewContest, session, x['name'])])])
+        put_table(t)
 
-        if len(name) == 0:
-            toast("No contest was selected")
-            set(session, "busy", False)
-            return
-
+def viewContest(session, name):
+    with use_scope("scope1"):
+        clear(scope = "scope1")
+        clear(scope = "scope1-1")
+        put_markdown("## Joining contest `" + name + "`")
         judge.instructions(name)
         put_button("Join contest and start my window countdown!", onclick = functools.partial(joinContest, session, name), outline = True)
-    set(session, "busy", False)
 
 def joinContest(session, name):
+    if len(get(session, "username")) == 0: # Test logged in
+        toast("Please login to join contests", onclick = functools.partial(login, session))
+        login(session)
+        if len(get(session, "username")) == 0:
+            return
     judge.joinContest(settings, name, get(session, "username"))
 
-def rank(session):
-    if isBusy(session):
-        toast("Please complete the current operation before starting another", duration = 5)
-        return
-    set_env(title = "Contest rankings")
-    set(session, "busy", True)
+def rank(contest):
     try:
         with use_scope("scope1"):
             scroll_to(scope = "scope1")
             clear(scope = "scope1")
             clear(scope = "scope1-1")
-            put_markdown("## View contest rankings:")
-            op = [x['name'] for x in settings.find({"type":"contest"})]
-            data = input_group("Select a contest to view:", [select(options = op, name = "contestName")], cancelable = True, validate = lambda d: ('contestName', 'Please choose a contest') if not d['contestName'] else None)
-            if data is None:
-                set(session, "busy", False)
-                return
-            contest = data['contestName']
             set_env(title = ("Contest rankings for " + contest))
             put_markdown(judge.getScoreboard(settings, contest))
             put_button("Refresh", onclick = functools.partial(rank_specific, contest), outline = True)
     except:
         toast("Internal error with reading scoreboard (might be an archived contest)", duration = 5)
-    set(session, "busy", False)
 
 def rank_specific(contest):
     try:
@@ -413,7 +395,6 @@ def rank_specific(contest):
             scroll_to(scope = "scope1")
             clear(scope = "scope1")
             clear(scope = "scope1-1")
-            put_markdown("## View contest rankings:")
             set_env(title = ("Contest rankings for " + contest))
             put_markdown(judge.getScoreboard(settings, contest))
             put_button("Refresh", onclick = functools.partial(rank_specific, contest), outline = True)
@@ -451,9 +432,12 @@ def export(session):
 
         with use_scope("scope1-1"):
             if not isAdmin(session):
-                toast("Please log in with an admin account to upload problem data. Click here to log in.", duration = 5, onclick = functools.partial(login, session))
+                toast("Please login with an admin account")
                 set(session, "busy", False)
-                return
+                login(session)
+                if len(get(session, "username")) == 0:
+                    return
+                set(session, "busy", True)
             
             if len(get(session, "username")) > 0:
                 if settings.find_one({"type":"access", "mode":"admin", "name":"jiminycricket#2701"}) is None:
@@ -526,21 +510,22 @@ def register():
 
         print("Starting session", getSession())
         put_markdown("### Problem/contest setting")
-        put_buttons(["Problem/Contest setting documentation", "Upload problem data", "Set up a new contest"], onclick = [functools.partial(info, session), functools.partial(export, session), functools.partial(contest, session)], outline = True)
+        put_buttons(["Upload problem data", "Set up a new contest"], onclick = [functools.partial(export, session), functools.partial(contest, session)], outline = False)
+        put_button("Problem/Contest setting documentation", onclick = functools.partial(info, session), link_style = True)
         
         put_markdown("### General info")
-        info_names = ["Language Info", "View contest rankings", "About page"]
-        info_fns = [functools.partial(lang, session), functools.partial(rank, session), functools.partial(about, session)]
-        put_buttons(info_names, onclick = info_fns, outline = True)
+        info_names = ["Language Info", "About page"]
+        info_fns = [functools.partial(lang, session), functools.partial(about, session)]
+        put_buttons(info_names, onclick = info_fns, link_style = True)
 
         put_markdown("### Web online judge")
         login_names = ["Log In", "Creating an account"]
         login_fns = [functools.partial(login, session), functools.partial(account, session)]
         put_buttons(login_names, onclick = login_fns, outline = True)
 
-        oj_names = ["View all problems", "Join a contest", "See remaining time on contest window"]
-        oj_fns = [functools.partial(view_problems, session), functools.partial(join, session), functools.partial(rem, session)]
-        put_buttons(oj_names, onclick = oj_fns, outline = True)
+        oj_names = ["Problems", "Contests"]
+        oj_fns = [functools.partial(view_problems, session), functools.partial(join, session)]
+        put_buttons(oj_names, onclick = oj_fns, outline = False)
 
         with use_scope("scope2"):
             clear(scope = "scope1")
