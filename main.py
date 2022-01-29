@@ -519,7 +519,7 @@ def register():
         put_markdown("### General info")
         info_names = ["Language Info", "About page"]
         info_fns = [functools.partial(lang, session), functools.partial(about, session)]
-        put_buttons(info_names, onclick = info_fns, link_style = True)
+        put_buttons(info_names, onclick = info_fns, outline = True)
 
         put_markdown("### Web online judge")
         login_names = ["Log In", "Creating an account"]
