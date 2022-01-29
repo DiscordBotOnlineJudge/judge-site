@@ -14,18 +14,15 @@ name: problemName
 authors: [author1, author2, ... , tester1, tester2, ...]
 difficulty: numberOfPoints
 types: [problemType1, problemType2, ...] # (e.g. "Implementation", "Graph Theory")
-
 time-limit:
-    general: [-> General time limit]
-    java: [-> Language-specific time limits (optional)]
-    python: ... 
-    # ... (State time limits in seconds)
-
+	general: [-> General time limit]
+	java: [-> Language-specific time limits (optional)]
+	python: ... 
+	# ... (State time limits in seconds)
 memory-limit:
-    general: [-> General memory limit]
-    java: [-> Language-specific memory limits (optional)]
-    # ... (State memory limits in Kilo-Bytes (KB); 1024 KB = 1 MB)
-
+	general: [-> General memory limit]
+	java: [-> Language-specific memory limits (optional)]
+	# ... (State memory limits in Kilo-Bytes (KB); 1024 KB = 1 MB)
 batches: [casesInBatch1, casesInBatch2, ...]
 points: [pointsForBatch1, pointsForBatch2, ...]
 private: # 1 for true, 0 for false
@@ -38,7 +35,7 @@ contest: contestName  # [should only be set if "private" is true]
 Please do **not** zip a folder containing these files; **directly zip the file contents only**.
 After you upload the problem data, only you will be able to re-upload and modify the problem contents.
 
-**Sample problem data zip file**: [problem.zip](https://drive.google.com/uc?export=download&id=1X3PaSNXm6m7rOYY6RYCEivvCD9ur2EiZ)
+**Sample problem data zip file**: [problem.zip](https://drive.google.com/uc?export=download&id=1HjHx6Z7TUCvAQ6ymqF6n-_3TYIgAgngp)
 
 ## Hosting a Contest on the Judge
 To host a contest:
@@ -46,7 +43,7 @@ To host a contest:
 
 2. Add the contest instructions to the ContestInstructions folder saved to a text file with the name [contestName].txt. The contents of this file will be shown to the user upon joining the contest.
 
-3. Register the contest on the database using the `"c"` command on this web app
+3. Register the contest using the "Set up a new contest" button above (under "Problem/contest setting")
 
 4. Use the `-set [contest1] [contest2]...` command to set up live scoreboards.
 
