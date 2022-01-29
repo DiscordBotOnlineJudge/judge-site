@@ -19,7 +19,7 @@ def instructions(contest):
     try:
         blob = bucket.blob("ContestInstructions/" + contest + ".txt")
         blob.download_to_filename("instructions.txt")
-        put_markdown("```\n" + open("instructions.txt").read() + "\n```")
+        put_markdown(open("instructions.txt").read())
     except Exception as e:
         put_markdown("This contest does not yet have an instructions file.")
 
