@@ -54,6 +54,9 @@ def isAdmin(session):
     return not settings.find_one({"type":"access", "mode":"admin", "name":user}) is None
 
 def private_problems(session):
+    if len(get(session, "username")) == 0:
+        toast("Please login to view private problems")
+        return
     if get(session, "pp"):
         return
     set(session, "pp", True)
