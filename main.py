@@ -376,8 +376,7 @@ def joinContest(session, name):
     if len(get(session, "username")) == 0: # Test logged in
         toast("Please login to join contests", onclick = functools.partial(login, session))
         login(session)
-        if len(get(session, "username")) == 0:
-            return
+        return
     judge.joinContest(settings, name, get(session, "username"))
 
 def rank(contest):
