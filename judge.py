@@ -199,10 +199,10 @@ def updateScore(settings, contest, problem, user, score, ct):
 
     settings.update_one({"_id":post['_id']}, {"$set":{"solved":arr, "penalty":penalty, "time-bonus":time_bonus}})
 
-def runSubmission(judges, username, cleaned, lang, problm, attachments, return_dict):
+def runSubmission(judges, username, cleaned, lang, problm, attachments, return_dict, sub_id):
     with grpc.insecure_channel(judges['ip'] + ":" + str(judges['port'])) as channel:
         stub = judge_pb2_grpc.JudgeServiceStub(channel)
-        response = stub.judge(judge_pb2.SubmissionRequest(username = username, source = cleaned, lang = lang, problem = problm['name'], attachment = attachments))
+        response = stub.judge(judge_pb2.SubmissionRequest(username = username, source = cleaned, lang = lang, problem = problm['name'], attachment = attachments, sub_id=sub_id))
         finalscore = response.finalScore
         return_dict['finalscore'] = finalscore
 
@@ -221,7 +221,13 @@ def judgeSubmission(settings, username, problem, lang, cleaned):
 
         avail = judges['num']
 
+        sub_cnt = settings.find_one({"type":"sub_cnt"})['cnt']
+        settings.update_one({"type":"sub_cnt"}, {"$inc":{"cnt":1}})
+
         settings.insert_one({"type":"use", "author":username, "message":cleaned})
+        settings.insert_one({"type":"submission", "author":username, "message":cleaned, "id":sub_cnt, "output":""})
+
+        sub = settings.find_one({"type":"submission", "id":sub_cnt})
 
         global setting
         setting = settings
@@ -230,7 +236,7 @@ def judgeSubmission(settings, username, problem, lang, cleaned):
 
         manager = Manager()
         return_dict = manager.dict()
-        rpc = Process(target = runSubmission, args = (judges, username, cleaned, lang, problm, False, return_dict,))
+        rpc = Process(target = runSubmission, args = (judges, username, cleaned, lang, problm, False, return_dict, sub_cnt,))
         rpc.start()
 
         msgContent = "```\nWaiting for response from Judge " + str(avail) + "\n```"
@@ -244,7 +250,7 @@ def judgeSubmission(settings, username, problem, lang, cleaned):
                         put_markdown(msgContent)
 
                         while rpc.is_alive():
-                            newcontent = settings.find_one({"_id":judges['_id']})['output'].replace("diff", "").replace("`", "").replace("+ ", "  ").replace("- ", "  ")
+                            newcontent = settings.find_one({"_id":sub['_id']})['output'].replace("diff", "").replace("`", "").replace("+ ", "  ").replace("- ", "  ")
                             if newcontent != msgContent and len(newcontent) > 0:
                                 msgContent = newcontent
                                 try:

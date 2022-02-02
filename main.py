@@ -19,6 +19,9 @@ from google.cloud import storage
 from functools import cmp_to_key
 from pymongo import MongoClient
 
+from flask import Flask
+app = Flask(__name__)
+
 cluster = MongoClient("mongodb+srv://onlineuser:$" + os.getenv("PASSWORD") + "@discord-bot-online-judg.7gm4i.mongodb.net/database?retryWrites=true&w=majority")
 db = cluster['database']
 settings = db['settings']
@@ -497,6 +500,7 @@ def account(session):
         clear(scope = "scope1-1")
         put_markdown(open("web_oj_documentation.md", "r").read())
 
+@app.route("/home")
 def register():
     set_env(title = "Discord Bot Online Judge")
     s.run_js("""$('footer').remove()""")
@@ -545,3 +549,4 @@ if __name__ == '__main__':
     os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = 'google-service-key.json'
     settings.delete_many({"type":"session"})
     pywebio.start_server(register, port=int(os.getenv("PORT")))
+    #pywebio.platform.flask.start_server(register, port=int(os.getenv("PORT")))
