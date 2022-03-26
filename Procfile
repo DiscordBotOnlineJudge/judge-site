@@ -1,1 +1,1 @@
-web: python3 main.py
+web: python3 -m pip install -U pywebio && python3 main.py
